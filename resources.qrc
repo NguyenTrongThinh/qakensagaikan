@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/splash">
+        <file>resources/splash.png</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>resources/barcode.png</file>
+        <file>resources/Go-back-icon.png</file>
+        <file>resources/exitblue.png</file>
+        <file>resources/exitred.png</file>
+        <file>resources/internet_have.png</file>
+        <file>resources/internet_lost.png</file>
+        <file>resources/setting_blue.png</file>
+        <file>resources/setting_white.png</file>
+        <file>resources/done.png</file>
+        <file>resources/syncing_60x60.gif</file>
+        <file>resources/camera_blank.png</file>
+        <file>resources/checked_60x60.png</file>
+        <file>resources/unchecked_60x60.png</file>
+        <file>resources/checked_60x60_clear.png</file>
+        <file>resources/unchecked_60x60_clear.png</file>
+        <file>resources/warningicon_80x80.png</file>
+        <file>resources/critical_80x80.png</file>
+        <file>resources/infoicon_80x80.png</file>
+        <file>resources/checked_withwarn_60x60.png</file>
+        <file>resources/done_withwarn.png</file>
+        <file>resources/back_gray.png</file>
+        <file>resources/back_pink.png</file>
+        <file>resources/human_pink.png</file>
+        <file>resources/human_gray.png</file>
+        <file>resources/save_clicked.png</file>
+        <file>resources/save.png</file>
+        <file>resources/trash_clicked.png</file>
+        <file>resources/trash.png</file>
+        <file>resources/qrcode.png</file>
+    </qresource>
+</RCC>

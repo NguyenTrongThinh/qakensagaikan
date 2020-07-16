@@ -1,0 +1,52 @@
+#include "cFreeMemory.h"
+#include <QPixmap>
+#include <QDebug>
+#include <QStorageInfo>
+
+cFreeMemory::cFreeMemory(QWidget *parent)
+{
+    Q_UNUSED(parent);
+    QFont ubuntuTimeFont("Ubuntu", 15, QFont::Bold);
+    setFont(ubuntuTimeFont);
+    m_Timer = new QTimer();
+    m_Timer->setInterval(5);
+    connect(m_Timer, SIGNAL(timeout()), this, SLOT(onTimerTimeout()));
+    m_Timer->start();
+}
+
+cFreeMemory::~cFreeMemory()
+{
+    m_Timer->stop();
+    delete m_Timer;
+}
+
+void cFreeMemory::mouseReleaseEvent(QMouseEvent *event)
+{
+    emit sigMouseReleaseEvent();
+    QFont ubuntuTimeFont("Ubuntu", 15, QFont::Bold);
+    setFont(ubuntuTimeFont);
+    QLabel::mouseReleaseEvent(event);
+}
+
+void cFreeMemory::mousePressEvent(QMouseEvent *event)
+{
+    QFont ubuntuTimeFont("Ubuntu", 12, QFont::Bold);
+    setFont(ubuntuTimeFont);
+    QLabel::mouseReleaseEvent(event);
+}
+
+void cFreeMemory::onTimerTimeout()
+{
+    if (m_Timer != nullptr) {
+        QStorageInfo storage = QStorageInfo::root();
+
+        qDebug() << storage.rootPath();
+        if (storage.isReadOnly())
+            qDebug() << "isReadOnly:" << storage.isReadOnly();
+
+        qDebug() << "name:" << storage.name();
+        qDebug() << "fileSystemType:" << storage.fileSystemType();
+        qDebug() << "size:" << storage.bytesTotal()/1000/1000 << "MB";
+        qDebug() << "availableSize:" << storage.bytesAvailable()/1000/1000 << "MB";
+    }
+}

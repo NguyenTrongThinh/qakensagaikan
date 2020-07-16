@@ -1,0 +1,28 @@
+#ifndef CCUSTOMLABEL_H
+#define CCUSTOMLABEL_H
+
+#include <QObject>
+#include <QWidget>
+#include <QLabel>
+#include <QFocusEvent>
+#include <QTimer>
+
+
+class cFreeMemory : public QLabel
+{
+    Q_OBJECT
+public:
+    explicit cFreeMemory(QWidget *parent = nullptr);
+    ~cFreeMemory();
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+private:
+    QTimer *m_Timer = nullptr;
+signals:
+    void sigMouseReleaseEvent();
+    void sigLowMemoryEvent();
+private slots:
+    void onTimerTimeout();
+};
+
+#endif // CCUSTOMLABEL_H

@@ -1,0 +1,32 @@
+#ifndef ROWERRORWIDGET_H
+#define ROWERRORWIDGET_H
+
+#include <QWidget>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QHBoxLayout>
+
+class rowErrorWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit rowErrorWidget(QWidget *parent = nullptr);
+    ~rowErrorWidget();
+    void setLineEditText(const QString &text);
+    void setCheckBoxText(const QString &text);
+    bool isCheckBoxChecked();
+    QString getLineEditText();
+    void setFocusColor();
+    void clearFocusColor();
+private:
+    QCheckBox *m_CheckBox = nullptr;
+    QLineEdit *m_LineEdit =  nullptr;
+    QHBoxLayout *m_HBoxLayout = nullptr;
+
+signals:
+    void clicked();
+public slots:
+    void onCheckBoxStateChanged(int status);
+};
+
+#endif // ROWERRORWIDGET_H
