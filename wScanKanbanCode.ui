@@ -179,7 +179,7 @@ border: 1px solid black</string>
         <widget class="QLabel" name="lbCodeAB1">
          <property name="font">
           <font>
-           <pointsize>35</pointsize>
+           <pointsize>25</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -248,7 +248,7 @@ border: 1px solid black</string>
         <widget class="QLabel" name="lbCodeAB2">
          <property name="font">
           <font>
-           <pointsize>35</pointsize>
+           <pointsize>25</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>

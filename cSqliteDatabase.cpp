@@ -159,6 +159,11 @@ QList<QPair<QString, QString> > cSQliteDatabase::getNewError()
     return m_NewError;
 }
 
+QList<cDataMH> cSQliteDatabase::getNewDataMH()
+{
+    return m_DataMH;
+}
+
 void cSQliteDatabase::clearDataMH()
 {
     m_DataMH.clear();
@@ -179,7 +184,10 @@ bool cSQliteDatabase::createTransactionTable()
             return retVal;
     }
     QSqlQuery query = QSqlQuery(m_Database);
-    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(9), time CHAR(12), seibango CHAR(6),  soto INTEGER, sosoi INTEGER, loi TEXT, block CHAR(8), ca CHAR(1), deviceid CHAR(18), hinh TEXT, submit INTEGER)").arg(transactiontable);
+    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv TEXT, time TEXT,\
+                 deviceid TEXT, line TEXT, makanban TEXT, ngayin TEXT, nameplate TEXT, maab1 TEXT, ngayinmaab1 TEXT,\
+                 nameplateab1 TEXT, prefixab1 TEXT, maab2 TEXT, ngayinmaab2 TEXT, namplateab2 TEXT, pretValrefixab2 TEXT,\
+                 loi TEXT, ca TEXT, hinh TEXT, submit INTEGER)").arg(transactiontable);
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -199,14 +207,21 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
         if (error.type() != QSqlError::NoError)
             return retVal;
     }
-    QSqlQuery query = QSqlQuery(m_Database);
 
     QString mnv = dataSession.getmnv();
     QString time = dataSession.gettime();
-    QString seibango = dataSession.getseibango();
-    int soto = dataSession.getsoto();
-    int sosoi = dataSession.getsosoi();
-    QString block = dataSession.getblock();
+    QString mahang = dataSession.getMHCode();
+    QString dateprintMH = dataSession.getMHDatePrint();
+    QString nameplateMH = dataSession.getMHNamePlate();
+    QString maab1 = dataSession.getMaAB1();
+    QString dateprintab1 = dataSession.getDatePrintAB1();
+    QString nameplateab1 = dataSession.getNamePlateAB1();
+    QString prefixab1 = dataSession.getPrefixAB1();
+    QString maab2 = dataSession.getMaAB2();
+    QString dateprintab2 = dataSession.getDatePrintAB2();
+    QString nameplateab2 = dataSession.getNamePlateAB2();
+    QString prefixab2 = dataSession.getPrefixAB2();
+    QString line = dataSession.getLine();
     QString ca = dataSession.getca();
     QString deviceid = dataSession.getdeviceid();
     QList<QPair<QString, int>> errorList = dataSession.getloi();
@@ -224,26 +239,40 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
         if (i < (picturesList.count() - 1))
             hinh.append(":");
     }
-    QString cmd = QString("INSERT INTO \"%1\" (mnv, time, seibango, soto, sosoi, loi, block, ca, deviceid, hinh, submit) VALUES (\"%2\", \"%3\", \"%4\", %5, %6, \"%7\", \"%8\", \"%9\", \"%10\", \"%11\", %12)")
-            .arg(transactiontable)
+    QString cmd = QString("INSERT INTO history (mnv, time, deviceid, line, makanban, ngayin,\
+             nameplate, maab1, ngayinmaab1, nameplateab1, prefixab1, maab2, ngayinmaab2,\
+             nameplateab2, prefixab2, loi, ca, hinh, submit) \
+             VALUES (\"%1\", \"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\", \"%9\", \"%10\", \"%11\", \"%12\", \"%13\", \"%14\", \"%15\", \"%16\", \"%17\", \"%18\", %19)")
             .arg(mnv)
             .arg(time)
-            .arg(seibango)
-            .arg(soto)
-            .arg(sosoi)
-            .arg(loi)
-            .arg(block)
-            .arg(ca)
             .arg(deviceid)
+            .arg(line)
+            .arg(mahang)
+            .arg(dateprintMH)
+            .arg(nameplateMH)
+            .arg(maab1)
+            .arg(dateprintab1)
+            .arg(nameplateab1)
+            .arg(prefixab1)
+            .arg(maab2)
+            .arg(dateprintab2)
+            .arg(nameplateab2)
+            .arg(prefixab2)
+            .arg(loi)
+            .arg(ca)
             .arg(hinh)
             .arg(submited);
+
+    QSqlQuery query = QSqlQuery(m_Database);
+
+    qDebug() << "Command: " << cmd;
     query.prepare(cmd);
-    //qDebug() << "Command: " << cmd;
     query.exec();
     retVal = m_Database.transaction();
     if (retVal)
         retVal = m_Database.commit();
     query.clear();
+    qDebug() << "========> " << retVal;
     return retVal;
 }
 
@@ -268,28 +297,65 @@ QList<cDataSession> cSQliteDatabase::getUnsubmitedTransaction()
     while(query.next()) {
         datasession.setmnv(query.value(1).toString());
         datasession.settime(query.value(2).toString());
-        datasession.setseibango(query.value(3).toString());
-        datasession.setsoto(query.value(4).toInt());
-        datasession.setsosoi(query.value(5).toInt());
-        if (!query.value(6).toString().isEmpty()) {
-            QStringList loiList = query.value(6).toString().split(':');
+        datasession.setdeviceid(query.value(3).toString());
+        datasession.setLine(query.value(4).toString());
+        datasession.setMHCode(query.value(5).toString());
+        datasession.setMHDatePrint(query.value(6).toString());
+        datasession.setMHNamePlate(query.value(7).toString());
+        datasession.setMaAB1(query.value(8).toString());
+        datasession.setDatePrintAB1(query.value(9).toString());
+        datasession.setNamePlateAB1(query.value(10).toString());
+        datasession.setPrefixAB1(query.value(11).toString());
+        datasession.setMaAB2(query.value(12).toString());
+        datasession.setDatePrintAB2(query.value(13).toString());
+        datasession.setNamePlateAB2(query.value(14).toString());
+        datasession.setPrefixAB2(query.value(15).toString());
+        if (!query.value(16).toString().isEmpty()) {
+            QStringList loiList = query.value(16).toString().split(':');
             foreach(QString loiPair, loiList) {
                 QStringList motloi = loiPair.split(',');
                 loi.append(QPair<QString, int>(motloi.first(), motloi.last().toInt()));
             }
         }
         datasession.setloi(loi);
-        datasession.setblock(query.value(7).toString());
-        datasession.setca(query.value(8).toString());
-        datasession.setdeviceid(query.value(9).toString());
-        QString hinh = query.value(10).toString();
+        datasession.setca(query.value(17).toString());
+        QString hinh = query.value(18).toString();
         QStringList picturesList = hinh.split(":");
         datasession.setHinh(picturesList);
         retVal.append(datasession);
         loi.clear();
     }
+    qDebug() << "========> ";
     query.clear();
     return retVal;
+}
+
+bool cSQliteDatabase::getOldMHTable()
+{
+    QMutexLocker locker(&m_Mutex);
+    cDataMH dataMH;
+    if (!m_Database.isOpen())
+    {
+        QSqlError error = initDatabase();
+        if (error.type() != QSqlError::NoError)
+            return false;
+    }
+    QSqlQuery query = QSqlQuery(m_Database);
+    QString cmd = QString("SELECT * FROM \"%1\"").arg(mhsession);
+    query.prepare(cmd);
+    query.exec();
+    while(query.next()) {
+        dataMH.setMaHang(query.value(1).toString());
+        dataMH.setSoMaAB(query.value(2).toInt());
+        dataMH.setMaAB1(query.value(3).toString());
+        dataMH.setMaAB2(query.value(4).toString());
+        dataMH.setThaoTacMCU(query.value(5).toString());
+        dataMH.setChamMagic(query.value(6).toString());
+        dataMH.setDongMoc(query.value(7).toString());
+        m_DataMH.append(dataMH);
+    }
+    query.clear();
+    return true;
 }
 
 bool cSQliteDatabase::updateUnsubmitedTransaction(int submited, QString dateTime)
@@ -778,6 +844,7 @@ bool cSQliteDatabase::insertIntoMHTable(QString tableNam, cDataMH mhdata)
     }
     QSqlQuery query = QSqlQuery(m_Database);
     QString cmd = QString("INSERT INTO \"%1\" (mahang, somaab, maab1, maab2, thaotacmcu, chammagic, dongmoc) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\")").arg(tableNam).arg(mhdata.getMaHang()).arg(mhdata.getSoMaAB()).arg(mhdata.getMaAB1()).arg(mhdata.getMaAB2()).arg(mhdata.getThaoTacMCU()).arg(mhdata.getChamMagic()).arg(mhdata.getDongMoc());
+    qDebug() << cmd;
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();

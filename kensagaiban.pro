@@ -30,6 +30,8 @@ CONFIG += c++11
 LIBS += -ludev
 
 SOURCES += \
+    cAB1CodeParserUtils.cpp \
+    cAB2CodeParserUtils.cpp \
         cAutoSync.cpp \
         cCancelButton.cpp \
         cClockWidget.cpp \
@@ -72,9 +74,12 @@ SOURCES += \
     cPasswordDialog.cpp \
     cSaveButton.cpp \
     cTrashButton.cpp \
-    cCameraControllerWidg.cpp
+    cCameraControllerWidg.cpp \
+    wSelectLine.cpp
 
 HEADERS += \
+    cAB1CodeParserUtils.h \
+    cAB2CodeParserUtils.h \
         cAutoSync.h \
         cCancelButton.h \
         cClockWidget.h \
@@ -116,7 +121,8 @@ HEADERS += \
     cPasswordDialog.h \
     cSaveButton.h \
     cTrashButton.h \
-    cCameraControllerWidg.h
+    cCameraControllerWidg.h \
+    wSelectLine.h
 
 FORMS += \
         mainwindow.ui \
@@ -128,7 +134,8 @@ FORMS += \
     cSettingDialog.ui \
     wCameraStream.ui \
     cMessageBox.ui \
-    cPasswordDialog.ui
+    cPasswordDialog.ui \
+    wSelectLine.ui
 CONFIG(raspberry) {
     message(Building with Raspberry support.)
     LIBS += -lopencv_core        \

@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include <QTextStream>
 #include <QDebug>
+#include <QProcess>
 
 #define configureFileName  "kensabonder.cfg"
 
@@ -195,6 +196,35 @@ void cConfigureUtils::setManaualMode(QString mode)
     }
 }
 
+void cConfigureUtils::setNumOfSameScan(int num)
+{
+    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QFile cfgFile(homeFolder + "/" + configureFileName);
+    QJsonDocument itemDoc;
+    QVariantMap settingContent;
+    if(cfgFile.open(QIODevice::ReadWrite)) {
+        QTextStream in(&cfgFile);
+        QString content = in.readAll();
+        cfgFile.close();
+        if (!content.isEmpty()) {
+            itemDoc = QJsonDocument::fromJson(content.toLatin1());
+            settingContent = itemDoc.object().toVariantMap();
+            settingContent.remove("numofsamescan");
+            settingContent.insert("numofsamescan", num);
+            itemDoc = QJsonDocument::fromVariant(settingContent);
+            cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            cfgFile.write(itemDoc.toJson());
+            cfgFile.close();
+        } else {
+            settingContent.insert("numofsamescan", num);
+            itemDoc = QJsonDocument::fromVariant(settingContent);
+            cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            cfgFile.write(itemDoc.toJson());
+            cfgFile.close();
+        }
+    }
+}
+
 void cConfigureUtils::setPassword(QString password)
 {
     const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
@@ -216,6 +246,35 @@ void cConfigureUtils::setPassword(QString password)
             cfgFile.close();
         } else {
             settingContent.insert("password", password);
+            itemDoc = QJsonDocument::fromVariant(settingContent);
+            cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            cfgFile.write(itemDoc.toJson());
+            cfgFile.close();
+        }
+    }
+}
+
+void cConfigureUtils::setLine(QString line)
+{
+    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QFile cfgFile(homeFolder + "/" + configureFileName);
+    QJsonDocument itemDoc;
+    QVariantMap settingContent;
+    if(cfgFile.open(QIODevice::ReadWrite)) {
+        QTextStream in(&cfgFile);
+        QString content = in.readAll();
+        cfgFile.close();
+        if (!content.isEmpty()) {
+            itemDoc = QJsonDocument::fromJson(content.toLatin1());
+            settingContent = itemDoc.object().toVariantMap();
+            settingContent.remove("line");
+            settingContent.insert("line", line);
+            itemDoc = QJsonDocument::fromVariant(settingContent);
+            cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+            cfgFile.write(itemDoc.toJson());
+            cfgFile.close();
+        } else {
+            settingContent.insert("line", line);
             itemDoc = QJsonDocument::fromVariant(settingContent);
             cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
             cfgFile.write(itemDoc.toJson());
@@ -392,6 +451,38 @@ QString cConfigureUtils::getPassword()
     return retVal;
 }
 
+QString cConfigureUtils::getLine()
+{
+    QString retVal = "";
+    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QFile cfgFile(homeFolder + "/" + configureFileName);
+
+    if (cfgFile.exists()) {
+        if(cfgFile.open(QIODevice::ReadOnly)) {
+            QTextStream in(&cfgFile);
+            QString content = in.readAll();
+            cfgFile.close();
+            if (!content.isEmpty()) {
+                QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
+                QJsonObject itemObj = itemDoc.object();
+                retVal = itemObj.take("line").toString();
+            }
+        }
+    }
+    return retVal;
+}
+
+QString cConfigureUtils::getIpAddress()
+{
+    QProcess process;
+    process.start("hostname -I");
+    process.waitForFinished(-1); // will wait forever until finished
+
+    QString stdout = process.readAllStandardOutput().trimmed();
+
+    return stdout;
+}
+
 int cConfigureUtils::getDelayValue()
 {
     int retVal = 0;
@@ -407,6 +498,27 @@ int cConfigureUtils::getDelayValue()
                 QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
                 QJsonObject itemObj = itemDoc.object();
                 retVal = itemObj.take("delay").toInt();
+            }
+        }
+    }
+    return retVal;
+}
+
+int cConfigureUtils::getNumOfSameScan()
+{
+    int retVal = 0;
+    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QFile cfgFile(homeFolder + "/" + configureFileName);
+
+    if (cfgFile.exists()) {
+        if(cfgFile.open(QIODevice::ReadOnly)) {
+            QTextStream in(&cfgFile);
+            QString content = in.readAll();
+            cfgFile.close();
+            if (!content.isEmpty()) {
+                QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
+                QJsonObject itemObj = itemDoc.object();
+                retVal = itemObj.take("numofsamescan").toInt();
             }
         }
     }

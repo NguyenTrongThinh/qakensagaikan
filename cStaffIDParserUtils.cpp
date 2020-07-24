@@ -17,5 +17,5 @@ QString cStaffIDParserUtils::getCa(QString mnv)
 
 QString cStaffIDParserUtils::getMNV(QString mnv)
 {
-    return mnv.mid(1, 6).toUpper();
+    return mnv.mid(1, 9).toUpper();
 }

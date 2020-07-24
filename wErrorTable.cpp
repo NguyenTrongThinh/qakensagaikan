@@ -8,7 +8,10 @@
 #include <QString>
 #include <cConfigureUtils.h>
 #include "cMessageBox.h"
-
+#include <QScroller>
+#include <QScrollBar>
+#include "cAB1CodeParserUtils.h"
+#include "cAB2CodeParserUtils.h"
 
 wErrorTable::wErrorTable(QWidget *parent) :
     QWidget(parent),
@@ -18,11 +21,14 @@ wErrorTable::wErrorTable(QWidget *parent) :
     m_DataBase = cSQliteDatabase::instance();
     m_NumberPad = new cNumberPad();
     ui->vlkeypad->addWidget(m_NumberPad);
+    QScroller::grabGesture(ui->scrollArea, QScroller::LeftMouseButtonGesture);
     m_CameraButton = new QPushButton();
     m_CameraButton->setStyleSheet("background-color: rgb(52, 101, 164); color: rgb(238, 238, 236); font-size: 30px; font-style: bold");
     m_CameraButton->setMinimumHeight(40);
     m_CameraButton->setText("CHỤP ẢNH");
     ui->vlkeypad->addWidget(m_CameraButton);
+    ui->scrollArea->verticalScrollBar()->setSingleStep(20);
+    ui->scrollArea->verticalScrollBar()->setPageStep(60);
     connect(m_CameraButton, SIGNAL(clicked()), this, SIGNAL(sigCameraButtonClicked()));
     connect(m_NumberPad, SIGNAL(buttonClicked(QString)), this, SLOT(onButtonClicked(QString)));
 
@@ -54,19 +60,47 @@ void wErrorTable::setMH(QString text)
     ui->lblMH->setText(text.toUpper());
 }
 
+void wErrorTable::setAB1(QString ab1)
+{
+    if(ab1.isEmpty() == false)
+    {
+        m_AB1 = ab1;
+    }
+    else
+    {
+        m_AB1 = "";
+    }
+
+}
+
+void wErrorTable::setAB2(QString ab2)
+{
+    if(ab2.isEmpty() == false)
+    {
+        m_AB2 = ab2;
+    }
+    else
+    {
+        m_AB2 = "";
+    }
+}
+
 void wErrorTable::createErrorTableContent(QList<QPair<QString, QString> > content)
 {
     int row = 0, col = 0;
     int checkboxw, checkboxh;
-    checkboxh = checkboxw = 40 - (content.count() - 10);
-    if (checkboxh < 10 || checkboxw < 10) {
-        checkboxh = checkboxw = 10;
-    }
+//    checkboxh = checkboxw = 40 - (content.count() - 10);
+//    if (checkboxh < 10 || checkboxw < 10) {
+//        checkboxh = checkboxw = 10;
+//    }
+    checkboxh = checkboxw = 40;
 
     qDebug() << "CheckBox Size: " << checkboxh << " " << checkboxw;
 
-    int fontSize = 12 - (content.count() - 10);
-    QFont ubuntuFont("Ubuntu", (fontSize > 5)?fontSize:5, QFont::Bold);
+//    int fontSize = 12 - (content.count() - 10);
+//    QFont ubuntuFont("Ubuntu", (fontSize > 5)?fontSize:5, QFont::Bold);
+    int fontSize = 20;
+    QFont ubuntuFont("Ubuntu", fontSize, QFont::Bold);
     qDebug() << "Text Font Size: " << ubuntuFont.pointSize();
 
     m_SignalMapper = new QSignalMapper();
@@ -126,30 +160,45 @@ void wErrorTable::onButtonClicked(QString label)
         dataSession.setHinh(tempDataSession.getPicturesList());
         dataSession.setmnv(cStaffIDParserUtils::getMNV(m_MNV));
         dataSession.settime(QDateTime::currentDateTime().toString("ddMMyyhhmmss"));
-        dataSession.setseibango(cKanbanParserUtils::getSeibango(m_MH));
-        dataSession.setsoto(cKanbanParserUtils::getSoTo(m_MH).toInt());
-        dataSession.setsosoi(cKanbanParserUtils::getSoSoi(m_MH).toInt());
-        dataSession.setblock(cKanbanParserUtils::getTenBlock(m_MH));
+        dataSession.setMHCode(cKanbanParserUtils::getMH(m_MH));
+        dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_MH));
+        dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_MH));
+        dataSession.setLine(cConfigureUtils::getLine());
+
+        dataSession.setdeviceid(cConfigureUtils::getIpAddress());
+        dataSession.setMaAB1(cAB1CodeParserUtils::getAB1(m_AB1));
+        dataSession.setPrefixAB1(cAB1CodeParserUtils::getAB1Prefix(m_AB1));
+        dataSession.setDatePrintAB1(cAB1CodeParserUtils::getAB1DatePrint(m_AB1));
+        dataSession.setNamePlateAB1(cAB1CodeParserUtils::getAB1NamePlate(m_AB1));
+        dataSession.setMaAB2(cAB2CodeParserUtils::getAB2(m_AB2));
+        dataSession.setPrefixAB2(cAB2CodeParserUtils::getAB2Prefix(m_AB2));
+        dataSession.setDatePrintAB2(cAB2CodeParserUtils::getAB2DatePrint(m_AB2));
+        dataSession.setNamePlateAB2(cAB2CodeParserUtils::getAB2NamePlate(m_AB2));
         dataSession.setca(cStaffIDParserUtils::getCa(m_MNV));
-        dataSession.setdeviceid(cConfigureUtils::getWifiMac());
+
+        qDebug() << "Ip Address: " << cConfigureUtils::getIpAddress();
+        qDebug() << "MH Date Print: " << cKanbanParserUtils::getDatePrint(m_MH);
+        qDebug() << "MH Name Plate: " << cKanbanParserUtils::getMHNamePlate(m_MH);
+        qDebug() << "AB1 Date Print: " << cAB1CodeParserUtils::getAB1DatePrint(m_AB1);
+        qDebug() << "AB1 Name Plate: " << cAB1CodeParserUtils::getAB1NamePlate(m_AB1);
+        qDebug() << "AB1 Prefix: " << cAB1CodeParserUtils::getAB1Prefix(m_AB1);
+        qDebug() << "AB1: " << cAB1CodeParserUtils::getAB1(m_AB1);
+        qDebug() << "AB2 Date Print: " << cAB2CodeParserUtils::getAB2DatePrint(m_AB2);
+        qDebug() << "AB2 Name Plate: " << cAB2CodeParserUtils::getAB2NamePlate(m_AB2);
+        qDebug() << "AB2: " << cAB2CodeParserUtils::getAB2(m_AB2);
+        qDebug() << "AB2 Prefix: " << cAB2CodeParserUtils::getAB2Prefix(m_AB2);
         QList<QPair<QString, int>> loi;
-        int sosoi = cKanbanParserUtils::getSoSoi(m_MH).toInt();
         for (int i = 0; i < m_TableRowWidgetList.count(); i++) {
             if (m_TableRowWidgetList.at(i)->isCheckBoxChecked()) {
                 bool isConvertOK = false;
                 QString maLoi = m_tableContent.at(i).first;
                 int tempSLL = m_TableRowWidgetList.at(i)->getLineEditText().toInt(&isConvertOK, 10);
                 if (isConvertOK) {
-                    if (tempSLL == 0 || tempSLL > sosoi) {
+                    if (tempSLL == 0 ) {
                         inValidDataFound = true;
                         break;
                     } else {
                         SLL += tempSLL;
-                        if (SLL > sosoi)
-                        {
-                            inValidDataFound = true;
-                            break;
-                        }
                         loi.append(QPair<QString, int>(maLoi, tempSLL));
                     }
                 } else {
@@ -172,7 +221,7 @@ void wErrorTable::onButtonClicked(QString label)
         else if (inValidDataFound){
             cMessageBox *m_MessageBox = new cMessageBox();
             m_MessageBox->setText("Tìm thấy số lượng lỗi không hợp lệ");
-            m_MessageBox->setInformativeText("Số lượng lỗi phải khác 0 và nhỏ hơn hoặc bằng số sợi, vui lòng kiểm tra lại");
+            m_MessageBox->setInformativeText("Số lượng lỗi phải khác 0, vui lòng kiểm tra lại");
             m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
             m_MessageBox->setHideRejectButton();
             m_MessageBox->exec();

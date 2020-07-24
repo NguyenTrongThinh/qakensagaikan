@@ -160,6 +160,7 @@ int main(int argc, char *argv[])
         }
         qDebug() << "Found " << m_SQLiteDatabase->getNewError().count() << "new error";
         if (tableName.count() <= 0) {
+           m_SQLiteDatabase->getOldMHTable();
            qDebug() << "Unable to connect to server. contimue in ofline mode";
         }
         if (m_SQLiteDatabase->getNewError().count() > 0)

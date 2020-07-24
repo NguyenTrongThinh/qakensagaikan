@@ -35,11 +35,13 @@ public:
     bool insertAllMHIntoTable(QList<cDataMH> tableMH);
     bool istableExist(QString tableName);
     QList<QPair<QString, QString>> getNewError();
+    QList<cDataMH> getNewDataMH();
     void clearDataMH();
     void clearNewError();
     bool createTransactionTable();
     bool insertHistoryTransaction(cDataSession dataSession, int submited);
     QList<cDataSession> getUnsubmitedTransaction();
+    bool getOldMHTable();
     bool updateUnsubmitedTransaction(int submited, QString dateTime);
     bool deleteOldSubmitedTransaction();
     bool deleteOldMHTable();

@@ -9,10 +9,10 @@ class cKanbanParserUtils : public QObject
 public:
     explicit cKanbanParserUtils(QObject *parent = nullptr);
     ~cKanbanParserUtils();
-    static QString getSeibango(QString kanban);
-    static QString getSoSoi(QString kanban);
-    static QString getSoTo(QString kanban);
-    static QString getTenBlock(QString kanban);
+    static QString getMH(QString kanban);
+    static QString getDatePrint(QString kanban);
+    static QString getMHNamePlate(QString kanban);
+
 
 signals:
 

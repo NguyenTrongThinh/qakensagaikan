@@ -17,6 +17,9 @@ public:
     ~wCheckingKanban();
     void setMNV(QString mnv);
     void setMKB(QString kanban);
+    void setMAB1(QString maab1);
+    void setMAB2(QString maab2);
+    void setLine(QString line);
     void setDelayTiming(int sec);
     void cancelOperation();
 private:

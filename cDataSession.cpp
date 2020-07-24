@@ -6,7 +6,7 @@ cDataSession::cDataSession()
 
 }
 cDataSession::cDataSession(const cDataSession &other)
-    :m_mnv(other.m_mnv), m_time(other.m_time), m_seibango(other.m_seibango), m_deviceid(other.m_deviceid), m_soto(other.m_soto), m_sosoi(other.m_sosoi),  m_loi(other.m_loi), m_block(other.m_block), m_ca(other.m_ca), m_Hinh(other.m_Hinh)
+    :m_mnv(other.m_mnv), m_time(other.m_time), m_MHCode(other.m_MHCode), m_deviceid(other.m_deviceid), m_MHDatePrint(other.m_MHDatePrint), m_MHNamePlate(other.m_MHNamePlate),  m_loi(other.m_loi), m_block(other.m_block), m_ca(other.m_ca), m_Hinh(other.m_Hinh), m_maab1(other.m_maab1), m_prefixab1(other.m_prefixab1), m_dateprintab1(other.m_dateprintab1), m_nameplateab1(other.m_nameplateab1), m_maab2(other.m_maab2), m_prefixab2(other.m_prefixab2), m_dateprintab2(other.m_dateprintab2), m_nameplateab2(other.m_nameplateab2)
 {
 
 }
@@ -27,11 +27,6 @@ QString cDataSession::gettime() const
     return m_time;
 }
 
-QString cDataSession::getseibango() const
-{
-    return m_seibango;
-}
-
 QString cDataSession::getblock() const
 {
     return m_block;
@@ -47,14 +42,64 @@ QString cDataSession::getdeviceid() const
     return m_deviceid;
 }
 
-int cDataSession::getsoto() const
+QString cDataSession::getLine() const
 {
-    return m_soto;
+    return m_line;
 }
 
-int cDataSession::getsosoi() const
+QString cDataSession::getMHCode() const
 {
-    return m_sosoi;
+    return m_MHCode;
+}
+
+QString cDataSession::getMHNamePlate() const
+{
+    return m_MHNamePlate;
+}
+
+QString cDataSession::getMHDatePrint() const
+{
+    return m_MHDatePrint;
+}
+
+QString cDataSession::getMaAB1() const
+{
+    return m_maab1;
+}
+
+QString cDataSession::getNamePlateAB1() const
+{
+    return m_nameplateab1;
+}
+
+QString cDataSession::getDatePrintAB1() const
+{
+    return m_dateprintab1;
+}
+
+QString cDataSession::getPrefixAB1() const
+{
+    return m_prefixab1;
+}
+
+QString cDataSession::getMaAB2() const
+{
+    return m_maab2;
+}
+
+QString cDataSession::getNamePlateAB2() const
+{
+    return m_nameplateab2;
+}
+
+QString cDataSession::getDatePrintAB2() const
+{
+    return  m_dateprintab2;
+}
+
+QString cDataSession::getPrefixAB2() const
+{
+    return m_prefixab2;
 }
 
 QList<QPair<QString, int> > cDataSession::getloi() const
@@ -77,9 +122,9 @@ void cDataSession::settime(QString time)
     m_time = time;
 }
 
-void cDataSession::setseibango(QString seibango)
+void cDataSession::setMHCode(QString mhCode)
 {
-    m_seibango = seibango;
+    m_MHCode = mhCode;
 }
 
 void cDataSession::setblock(QString block)
@@ -97,14 +142,14 @@ void cDataSession::setdeviceid(QString deviceid)
     m_deviceid = deviceid;
 }
 
-void cDataSession::setsoto(int soto)
+void cDataSession::setMHDatePrint(QString mhDatePrint)
 {
-    m_soto = soto;
+    m_MHDatePrint = mhDatePrint;
 }
 
-void cDataSession::setsosoi(int sosoi)
+void cDataSession::setMHNamePlate(QString mhNamePlate)
 {
-    m_sosoi = sosoi;
+    m_MHNamePlate = mhNamePlate;
 }
 
 void cDataSession::setloi(QList<QPair<QString, int> > loi)
@@ -116,3 +161,50 @@ void cDataSession::setHinh(QStringList hinh)
 {
     m_Hinh = hinh;
 }
+
+void cDataSession::setLine(QString line)
+{
+    m_line = line;
+}
+
+void cDataSession::setMaAB1(QString maab1)
+{
+    m_maab1 = maab1;
+}
+
+void cDataSession::setNamePlateAB1(QString nameplateab1)
+{
+    m_nameplateab1 = nameplateab1;
+}
+
+void cDataSession::setDatePrintAB1(QString dateprintab1)
+{
+    m_dateprintab1 = dateprintab1;
+}
+
+void cDataSession::setPrefixAB1(QString prefixab1)
+{
+    m_prefixab1 = prefixab1;
+}
+
+void cDataSession::setMaAB2(QString maab2)
+{
+    m_maab2 = maab2;
+}
+
+void cDataSession::setNamePlateAB2(QString nameplateab2)
+{
+    m_nameplateab2 = nameplateab2;
+}
+
+void cDataSession::setDatePrintAB2(QString dateprintab2)
+{
+    m_dateprintab2 = dateprintab2;
+}
+
+void cDataSession::setPrefixAB2(QString prefixab2)
+{
+    m_prefixab2 = prefixab2;
+}
+
+

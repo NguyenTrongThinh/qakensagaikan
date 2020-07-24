@@ -34,6 +34,21 @@ void wCheckingKanban::setMKB(QString kanban)
     ui->lblMH->setText(kanban);
 }
 
+void wCheckingKanban::setMAB1(QString maab1)
+{
+    ui->lbAB1->setText(maab1);
+}
+
+void wCheckingKanban::setMAB2(QString maab2)
+{
+    ui->lbAB2->setText(maab2);
+}
+
+void wCheckingKanban::setLine(QString line)
+{
+    ui->lbLIne->setText(line);
+}
+
 void wCheckingKanban::setDelayTiming(int sec)
 {
     m_Delay = sec;

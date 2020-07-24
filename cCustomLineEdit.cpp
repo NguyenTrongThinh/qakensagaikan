@@ -5,7 +5,7 @@
 cCustomLineEdit::cCustomLineEdit(QWidget *parent)
 {
     Q_UNUSED(parent);
-    setReadOnly(true);
+    setReadOnly(false);
 }
 
 cCustomLineEdit::~cCustomLineEdit()
@@ -35,5 +35,11 @@ void cCustomLineEdit::keyReleaseEvent(QKeyEvent *event)
 {
     setReadOnly(false);
     QLineEdit::keyPressEvent(event);
-    setReadOnly(true);
+//    setReadOnly(true);
+}
+
+void cCustomLineEdit::mousePressEvent(QMouseEvent *evt)
+{
+    emit sigMousePressEvent();
+    QLineEdit::mousePressEvent(evt);
 }

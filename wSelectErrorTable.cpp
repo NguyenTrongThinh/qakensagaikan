@@ -47,3 +47,8 @@ void wSelectErrorTable::onButtonClick(qint32 index)
     m_SelectedTableName = m_ErrorTableList.at(index);
     emit sigErrorTableSetected(m_SelectedTableName);
 }
+
+void wSelectErrorTable::on_pbLine_clicked()
+{
+    emit sigSelectLineClicked();
+}

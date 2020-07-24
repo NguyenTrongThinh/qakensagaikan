@@ -15,7 +15,9 @@ public:
     static void setDelayValue(int sec);
     static void setPicturesDir(QString dir);
     static void setManaualMode(QString mode);
+    static void setNumOfSameScan(int num);
     static void setPassword(QString password);
+    static void setLine(QString line);
     static QString getServerAdddress();
     static QString getScannerVid();
     static QString getScannerPid();
@@ -24,8 +26,13 @@ public:
     static QString getPicturesDir();
     static QString getManualMode();
     static QString getPassword();
+    static QString getLine();
+    static QString getIpAddress();
     static int getDelayValue();
+    static int getNumOfSameScan();
 signals:
+
+private:
 
 public slots:
 };

@@ -29,9 +29,11 @@ private:
     QString m_SelectedTableName;
 signals:
     void sigErrorTableSetected(QString tableName);
+    void sigSelectLineClicked();
 private slots:
     void onButtonClick(qint32 index);
 
+    void on_pbLine_clicked();
 };
 
 #endif // SELECTERRORTABLE_H

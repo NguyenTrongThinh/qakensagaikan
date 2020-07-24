@@ -4,6 +4,7 @@
 #include "cConfigureUtils.h"
 #include <QDebug>
 #include <QStyleOption>
+#include "cMessageBox.h"
 
 cSettingDialog::cSettingDialog(QWidget *parent) :
     QDialog(parent),
@@ -11,11 +12,12 @@ cSettingDialog::cSettingDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::FramelessWindowHint);
-
     ui->ckhManual->setText("Chế độ thủ công");
     ui->ckhManual->setStyleSheet("QCheckBox::indicator { width: 40px; height: 40px;};");
     m_NumberPad = new cNumberPad2();
     connect(m_NumberPad, SIGNAL(buttonClicked(QString)), this, SLOT(onKeypadClicked(QString)));
+    connect(ui->leditTimeDelay, SIGNAL(sigMousePressEvent()), this, SLOT(focusTimeEdit()));
+    connect(ui->leNumOfSameScan, SIGNAL(sigMousePressEvent()), this, SLOT(focusNUmOfSameEdit()));
     ui->hBoxKayPad->addStretch();
     ui->hBoxKayPad->addWidget(m_NumberPad);
     ui->hBoxKayPad->addStretch();
@@ -39,7 +41,7 @@ void cSettingDialog::setLineEditText(const QString &text)
     if (!isconvertOK)
     {
         if (QString::compare(text, "") == 0) {
-            ui->leditTimeDelay->clear();
+            m_lineedit->clear();
         } else {
         qDebug() << "Invalid input number";
         }
@@ -47,16 +49,19 @@ void cSettingDialog::setLineEditText(const QString &text)
     } else {
         qDebug() << "Append input number: " << number;
     }
-    if (QString::compare(ui->leditTimeDelay->text(), "0") == 0)
+
+    if (QString::compare(m_lineedit->text(), "0") == 0)
     {
-        ui->leditTimeDelay->clear();
-        ui->leditTimeDelay->setText(text);
+        m_lineedit->clear();
+        m_lineedit->setText(text);
     }
     else {
-        ui->leditTimeDelay->setText(ui->leditTimeDelay->text() + text);
+        m_lineedit->setText(m_lineedit->text() + text);
     }
 
-    ui->leditTimeDelay->setFocus();
+
+
+
 }
 
 void cSettingDialog::paintEvent(QPaintEvent *event)
@@ -85,8 +90,36 @@ void cSettingDialog::on_btnOK_clicked()
     } else {
         cConfigureUtils::setManaualMode("0");
     }
+    bool isConvertOK = false;
+    QString sNumSameScan = ui->leNumOfSameScan->text();
+    int numSameScan = sNumSameScan.toInt(&isConvertOK, 10);
+    if(isConvertOK && sNumSameScan >= 1)
+    {
+        cConfigureUtils::setNumOfSameScan(numSameScan);
+    }
+    else
+    {
+        cMessageBox *m_MessageBox = new cMessageBox();
+        m_MessageBox->setText("Số lần lặp không hợp lệ");
+        m_MessageBox->setInformativeText("Vui lòng kiểm tra lại");
+        m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+        m_MessageBox->setHideRejectButton();
+        m_MessageBox->exec();
+        delete m_MessageBox;
+
+    }
     if (isConverOK && delay >= 0) {
         cConfigureUtils::setDelayValue(delay);
+    }
+    else
+    {
+        cMessageBox *m_MessageBox = new cMessageBox();
+        m_MessageBox->setText("Thời gian delay không hợp lệ");
+        m_MessageBox->setInformativeText("Vui lòng kiểm tra lại");
+        m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+        m_MessageBox->setHideRejectButton();
+        m_MessageBox->exec();
+        delete m_MessageBox;
     }
     this->close();
 }
@@ -98,4 +131,25 @@ void cSettingDialog::onKeypadClicked(QString val)
     } else {
         setLineEditText(val);
     }
+}
+
+void cSettingDialog::setInputObject(QLineEdit *objLineEdit)
+{
+    m_lineedit = objLineEdit;
+    m_lineedit->setFocus();
+}
+
+void cSettingDialog::focusTimeEdit()
+{
+    setInputObject(ui->leditTimeDelay);
+}
+
+void cSettingDialog::focusNumOfRepeatEdit()
+{
+
+}
+
+void cSettingDialog::focusNUmOfSameEdit()
+{
+    setInputObject(ui->leNumOfSameScan);
 }

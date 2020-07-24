@@ -10,22 +10,19 @@ cKanbanParserUtils::~cKanbanParserUtils()
 
 }
 
-QString cKanbanParserUtils::getSeibango(QString kanban)
+QString cKanbanParserUtils::getMH(QString kanban)
 {
-    return kanban.left(5).toUpper();
+    return kanban.left(10).toUpper();
 }
 
-QString cKanbanParserUtils::getSoSoi(QString kanban)
+QString cKanbanParserUtils::getDatePrint(QString kanban)
 {
-    return kanban.mid(5, 2).toUpper();
+    return kanban.mid(13, 6).toUpper();
 }
 
-QString cKanbanParserUtils::getSoTo(QString kanban)
+QString cKanbanParserUtils::getMHNamePlate(QString kanban)
 {
-    return kanban.mid(7, 3).toUpper();
+    return kanban.mid(19, 4).toUpper();
 }
 
-QString cKanbanParserUtils::getTenBlock(QString kanban)
-{
-    return kanban.toUpper().right(2);
-}
+

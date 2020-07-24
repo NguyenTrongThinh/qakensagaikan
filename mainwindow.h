@@ -18,6 +18,7 @@
 #include "cCameraWorker.h"
 #include "wCameraStream.h"
 #include "cPasswordDialog.h"
+#include "wSelectLine.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +38,7 @@ private:
     cScannerUtils *m_ScannerUtils;
     cSQliteDatabase *m_Database;
     cSettingDialog *m_SettingDialog = nullptr;
+    wSelectLine *m_SelectLineDialog = nullptr;
     QStackedWidget *m_StackWidget;
     wSelectErrorTable *m_SelectErrorWidget;
     wScanStaffID *m_ScanStaffID;
@@ -49,11 +51,16 @@ private:
     cPasswordDialog *m_passwordDialog = nullptr;
     int m_NumberOfReturnScanMH = 1;
     int m_NumberOfSameMH = 1;
+    int m_MyState = 1;
+    int m_PreState = 0;
 
     QString m_UserSelectedTableName;
     QString m_StaffID;
     QString m_Kanbancode;
+    QString m_MaAB1;
+    QString m_MaAB2;
     QStringList m_TitlebarText;
+    QStringList m_ContinueMH;
     QStringList m_TenContinueousKanban;
     bool m_WifiConnected = false;
     cDataSessionActivating m_CurrentSessionData;
@@ -81,6 +88,7 @@ private slots:
     void onReCaptureImageRequest();
     void onSaveImageSuccess();
     void onFramedataReady(QPixmap pixmap);
+    void onSelectLineClicked();
 };
 
 #endif // MAINWINDOW_H

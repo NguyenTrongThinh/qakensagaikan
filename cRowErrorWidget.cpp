@@ -9,6 +9,8 @@ cRowErrorWidget::cRowErrorWidget(QWidget *parent) : QWidget(parent)
     m_LineEdit->setVisible(false);
     m_LineEdit->setAlignment(Qt::AlignCenter);
     m_LineEdit->setText("0");
+
+    m_CheckBox->setStyleSheet("font-size: 20pt;");
     m_HBoxLayout->addSpacing(1);
     m_HBoxLayout->addWidget(m_CheckBox, 0, Qt::AlignLeft);
     m_HBoxLayout->addStretch(500);

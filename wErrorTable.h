@@ -28,6 +28,8 @@ public:
     void clearCheckedItems();
     void setMNV(QString text);
     void setMH(QString text);
+    void setAB1(QString ab1);
+    void setAB2(QString ab2);
     void createErrorTableContent(QList<QPair<QString, QString>> content);
     void clearErrorTableContent();
 private:
@@ -40,6 +42,8 @@ private:
 
     QString m_MNV;
     QString m_MH;
+    QString m_AB1;
+    QString m_AB2;
 
     cNumberPad *m_NumberPad;
 

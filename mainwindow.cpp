@@ -5,6 +5,8 @@
 #include <QDateTime>
 #include "cStaffIDParserUtils.h"
 #include "cKanbanParserUtils.h"
+#include "cAB1CodeParserUtils.h"
+#include "cAB2CodeParserUtils.h"
 #include "cConfigureUtils.h"
 #include "cMessageBox.h"
 
@@ -15,19 +17,26 @@
 #define ERROR_TABLE_PAGE            4
 #define CAMERA_STREAM_PAGE          5
 
+#define STATE_IDLE                  0
+#define STATE_CHECKING_MH           1
+#define STATE_CHECKING_AB1          2
+#define STATE_CHECKING_AB2          3
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     m_TitlebarText << "Vui lòng chọn bảng lỗi" << "Quét Mã Nhân Viên" << "Quét Mã Kanban" << "Kanban đang scan" << "Bảng lỗi" << "Chụp Ảnh";
-    m_TenContinueousKanban.clear();
     m_Database = cSQliteDatabase::instance();
+    m_ContinueMH.clear();
+    m_TenContinueousKanban.clear();
 
 
     m_SelectErrorWidget = new wSelectErrorTable();
     m_SelectErrorWidget->setErrorTableList(m_Database->getErrorTableName());
     m_SelectErrorWidget->createButtonTable();
+    connect(m_SelectErrorWidget, SIGNAL(sigSelectLineClicked()), this, SLOT(onSelectLineClicked()));
 
     m_ScanStaffID = new wScanStaffID();
 
@@ -35,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_ScanStaffID->setStaffIDLable("SCAN");
     m_SCanKanbanCode->setKanbanLable("SCAN");
+    m_SCanKanbanCode->setMaAB1("");
+    m_SCanKanbanCode->setMaAB2("");
 
     m_CheckingKanban = new wCheckingKanban();
     connect(m_CheckingKanban, SIGNAL(sigOKCkicked()), this, SLOT(onCheckingKanbanOKClicked()));
@@ -154,12 +165,35 @@ void MainWindow::onCheckingKanbanOKClicked()
     dataSession.setHinh(tempDataSession.getPicturesList());
     dataSession.setmnv(cStaffIDParserUtils::getMNV(m_StaffID));
     dataSession.settime(QDateTime::currentDateTime().toString("ddMMyyhhmmss"));
-    dataSession.setseibango(cKanbanParserUtils::getSeibango(m_Kanbancode));
-    dataSession.setsoto(cKanbanParserUtils::getSoTo(m_Kanbancode).toInt());
-    dataSession.setsosoi(cKanbanParserUtils::getSoSoi(m_Kanbancode).toInt());
-    dataSession.setblock(cKanbanParserUtils::getTenBlock(m_Kanbancode.toUpper()));
+    dataSession.setMHCode(cKanbanParserUtils::getMH(m_Kanbancode));
+    dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_Kanbancode));
+    dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_Kanbancode));
+    dataSession.setLine(cConfigureUtils::getLine());
+
     dataSession.setca(cStaffIDParserUtils::getCa(m_StaffID));
-    dataSession.setdeviceid(cConfigureUtils::getWifiMac());
+    dataSession.setdeviceid(cConfigureUtils::getIpAddress());
+    dataSession.setMaAB1(cAB1CodeParserUtils::getAB1(m_MaAB1));
+    dataSession.setPrefixAB1(cAB1CodeParserUtils::getAB1Prefix(m_MaAB1));
+    dataSession.setDatePrintAB1(cAB1CodeParserUtils::getAB1DatePrint(m_MaAB1));
+    dataSession.setNamePlateAB1(cAB1CodeParserUtils::getAB1NamePlate(m_MaAB1));
+    dataSession.setMaAB2(cAB2CodeParserUtils::getAB2(m_MaAB2));
+    dataSession.setPrefixAB2(cAB2CodeParserUtils::getAB2Prefix(m_MaAB2));
+    dataSession.setDatePrintAB2(cAB2CodeParserUtils::getAB2DatePrint(m_MaAB2));
+    dataSession.setNamePlateAB2(cAB2CodeParserUtils::getAB2NamePlate(m_MaAB2));
+
+    qDebug() << "Ip Address: " << cConfigureUtils::getIpAddress();
+    qDebug() << "MH Date Print: " << cKanbanParserUtils::getDatePrint(m_Kanbancode);
+    qDebug() << "MH Name Plate: " << cKanbanParserUtils::getMHNamePlate(m_Kanbancode);
+    qDebug() << "AB1 Date Print: " << cAB1CodeParserUtils::getAB1DatePrint(m_MaAB1);
+    qDebug() << "AB1 Name Plate: " << cAB1CodeParserUtils::getAB1NamePlate(m_MaAB1);
+    qDebug() << "AB1 Prefix: " << cAB1CodeParserUtils::getAB1Prefix(m_MaAB1);
+    qDebug() << "AB1: " << cAB1CodeParserUtils::getAB1(m_MaAB1);
+    qDebug() << "AB2 Date Print: " << cAB2CodeParserUtils::getAB2DatePrint(m_MaAB2);
+    qDebug() << "AB2 Name Plate: " << cAB2CodeParserUtils::getAB2NamePlate(m_MaAB2);
+    qDebug() << "AB2: " << cAB2CodeParserUtils::getAB2(m_MaAB2);
+    qDebug() << "AB2 Prefix: " << cAB2CodeParserUtils::getAB2Prefix(m_MaAB2);
+
+
     QList<QPair<QString, int>> loi;
     dataSession.setloi(loi);
     bool retVal = m_Database->insertHistoryTransaction(dataSession, cSQliteDatabase::UNSUBMITED);
@@ -216,8 +250,116 @@ void MainWindow::onCheckingKanbanSettingClicked()
 void MainWindow::onScannerReady(const QString &data)
 {
     qDebug() << "Scanner From Main Windows : " << data;
-    if (!m_UserSelectedTableName.isEmpty() && m_StackWidget->currentIndex() == SCAN_KANBAN_PAGE && data.length() == 21 && data.at(0) != "A" && data.at(1) != "B") {
-        qDebug() << "Found MH Code: " << data;
+    qDebug() << "Scanner From Main Windows : " << data.length();
+    static int mySomaAB = 0;
+    if (!m_UserSelectedTableName.isEmpty() && m_StackWidget->currentIndex() == SCAN_KANBAN_PAGE && data.length() == 23 && data.at(0).toUpper() != "A" && data.at(1).toUpper() != "B" ) {
+
+        if(m_MyState == STATE_CHECKING_MH)
+        {
+            qDebug() << "Scanner From Main Windows : " << m_ContinueMH.length();
+            qDebug() << "Scanner From Main Windows : " << cConfigureUtils::getNumOfSameScan();
+            if(((m_ContinueMH.contains(data.toUpper()) == false) && (m_ContinueMH.length() == 0)) || ((m_ContinueMH.contains(data.toUpper()) == true) && (m_ContinueMH.length() < cConfigureUtils::getNumOfSameScan())))
+            {
+                if(!m_TenContinueousKanban.contains(data.toUpper()))
+                {
+                    qDebug() << "Found MH Code: " << data;
+                    m_Kanbancode = data.toUpper();
+                    m_SCanKanbanCode->setKanbanLable(m_Kanbancode.toUpper());
+                    m_CheckingKanban->setLine(cConfigureUtils::getLine());
+                    m_ErrorTable->setMH(m_Kanbancode.toUpper());
+                    m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
+                    QList<cDataMH> myDataMH = m_Database->getNewDataMH();
+
+                    for(int i = 0; i < myDataMH.length(); i++)
+                    {
+                        if(myDataMH[i].getMaHang() == m_Kanbancode.toUpper())
+                        {
+                            qDebug() << "Detect MH Code in DB ";
+                            mySomaAB = myDataMH[i].getSoMaAB();
+                            m_MaAB1 = "";
+                            m_MaAB2 = "";
+                            m_MaAB1 = myDataMH[i].getMaAB1().toUpper();
+                            m_MaAB2 = myDataMH[i].getMaAB2().toUpper();
+                            m_CheckingKanban->setMAB1(m_MaAB1);
+                            m_CheckingKanban->setMAB2(m_MaAB2);
+                            m_ErrorTable->setAB1(m_MaAB1);
+                            m_ErrorTable->setAB2(m_MaAB2);
+                            qDebug() << "So ma AB: " << mySomaAB;
+                            qDebug() << "Ma AB 1: " << m_MaAB1;
+                            qDebug() << "Ma AB 2:" << m_MaAB2;
+
+                        }
+                    }
+                    if(mySomaAB > 0)
+                    {
+                        m_SCanKanbanCode->setMaAB1("SCAN");
+                        m_MyState = STATE_CHECKING_AB1;
+                    }
+                    else
+                    {
+                        mySomaAB = 0;
+                        if(m_ContinueMH.length() == (cConfigureUtils::getNumOfSameScan() - 1))
+                        {
+                            m_ContinueMH.clear();
+                            m_TenContinueousKanban.append(m_Kanbancode);
+                            if (m_TenContinueousKanban.count() >= 10) {
+                                m_TenContinueousKanban.removeFirst();
+                            }
+                        }
+                        else
+                        {
+                            m_ContinueMH.append(m_Kanbancode);
+                        }
+                        QTimer::singleShot(200, this, SLOT(nextStackView()));
+                    }
+                }
+                else
+                {
+                    disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+                    cMessageBox *m_MessageBox = new cMessageBox();
+                    m_MessageBox->setText("Lỗi Scan Kanban");
+                    m_MessageBox->setInformativeText("10 lần scan kanban liên tiếp không được trùng nhau, vui lòng kiểm tra lại");
+                    m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+                    m_MessageBox->setHideRejectButton();
+                    m_MessageBox->exec();
+                    delete m_MessageBox;
+                    connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+                }
+
+            }
+            else
+            {
+                disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+                cMessageBox *m_MessageBox = new cMessageBox();
+                m_MessageBox->setText("Lỗi Scan Mã Hàng");
+                m_MessageBox->setInformativeText("Mã hàng không hợp lệ, vui lòng kiểm tra lại");
+                m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+                m_MessageBox->setHideRejectButton();
+                m_MessageBox->exec();
+                delete m_MessageBox;
+                connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+            }
+
+
+
+        }
+        else
+        {
+            disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+            cMessageBox *m_MessageBox = new cMessageBox();
+            m_MessageBox->setText("Lỗi Scan Kanban");
+            m_MessageBox->setInformativeText("Cần scan mã AB, vui lòng kiểm tra lại");
+            m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+            m_MessageBox->setHideRejectButton();
+            m_MessageBox->exec();
+            delete m_MessageBox;
+            connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+        }
+
+
 //        if (!m_TenContinueousKanban.contains(data.toUpper())) {
 //            m_Kanbancode = data.toUpper();
 //            m_TenContinueousKanban.append(m_Kanbancode);
@@ -240,7 +382,115 @@ void MainWindow::onScannerReady(const QString &data)
 //            delete m_MessageBox;
 //            connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
 //        }
-    } else if (!m_UserSelectedTableName.isEmpty() && (m_StackWidget->currentIndex() == SCAN_STAFF_PAGE) && (data.length() == 10) && data.contains("0000")) {
+    }
+    else if(!m_UserSelectedTableName.isEmpty() && m_StackWidget->currentIndex() == SCAN_KANBAN_PAGE && data.at(0).toUpper() == "A" && data.at(1).toUpper() == "B")
+    {
+        if(m_MyState == STATE_CHECKING_AB1)
+        {
+
+            if(m_MaAB1 == data.toUpper())
+            {
+                if(mySomaAB == 1)
+                {
+                    m_SCanKanbanCode->setMaAB1(data.toUpper());
+                    mySomaAB = 0;
+
+                    m_MyState = STATE_CHECKING_MH;
+                    QTimer::singleShot(200, this, SLOT(nextStackView()));
+
+                    if(m_ContinueMH.length() == (cConfigureUtils::getNumOfSameScan() - 1))
+                    {
+                        m_ContinueMH.clear();
+                        m_TenContinueousKanban.append(m_Kanbancode);
+                        if (m_TenContinueousKanban.count() >= 10) {
+                            m_TenContinueousKanban.removeFirst();
+                        }
+                    }
+                    else
+                    {
+                        m_ContinueMH.append(m_Kanbancode);
+                    }
+                }
+                else if(mySomaAB == 2)
+                {
+                    m_SCanKanbanCode->setMaAB1(data.toUpper());
+                    m_MyState = STATE_CHECKING_AB2;
+                    m_SCanKanbanCode->setMaAB2("SCAN");
+                }
+                else
+                {
+
+                }
+
+            }
+            else
+            {
+                disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+                cMessageBox *m_MessageBox = new cMessageBox();
+                m_MessageBox->setText("Lỗi Scan Kanban");
+                m_MessageBox->setInformativeText("Mã AB 1 không đúng, vui lòng kiểm tra lại");
+                m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+                m_MessageBox->setHideRejectButton();
+                m_MessageBox->exec();
+                delete m_MessageBox;
+                connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+            }
+
+
+
+        }
+        else if(m_MyState == STATE_CHECKING_AB2)
+        {
+            if(m_MaAB2 == data.toUpper())
+            {
+                m_SCanKanbanCode->setMaAB2(data.toUpper());
+                mySomaAB = 0;
+                if(m_ContinueMH.length() == (cConfigureUtils::getNumOfSameScan() - 1))
+                {
+                    m_ContinueMH.clear();
+                    m_TenContinueousKanban.append(m_Kanbancode);
+                    if (m_TenContinueousKanban.count() >= 10) {
+                        m_TenContinueousKanban.removeFirst();
+                    }
+                }
+                else
+                {
+                    m_ContinueMH.append(m_Kanbancode);
+                }
+                m_MyState = STATE_CHECKING_MH;
+                QTimer::singleShot(200, this, SLOT(nextStackView()));
+            }
+            else
+            {
+                disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+                cMessageBox *m_MessageBox = new cMessageBox();
+                m_MessageBox->setText("Lỗi Scan Kanban");
+                m_MessageBox->setInformativeText("Mã AB 2 không đúng, vui lòng kiểm tra lại");
+                m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+                m_MessageBox->setHideRejectButton();
+                m_MessageBox->exec();
+                delete m_MessageBox;
+                connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+            }
+
+        }
+        else
+        {
+            disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+
+            cMessageBox *m_MessageBox = new cMessageBox();
+            m_MessageBox->setText("Lỗi Scan Kanban");
+            m_MessageBox->setInformativeText("Cần scan mã hàng, vui lòng kiểm tra lại");
+            m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+            m_MessageBox->setHideRejectButton();
+            m_MessageBox->exec();
+            delete m_MessageBox;
+            connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
+        }
+    }
+    else if (!m_UserSelectedTableName.isEmpty() && (m_StackWidget->currentIndex() == SCAN_STAFF_PAGE) && (data.length() == 10) && data.contains("0000")) {
         qDebug() << "Found Staff ID: " << data;
         m_StaffID = data;
         m_ScanStaffID->setStaffIDLable(m_StaffID.toUpper());
@@ -264,7 +514,7 @@ void MainWindow::onScannerReady(const QString &data)
             delete m_MessageBox;
             connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
             if (retVal == QDialog::Accepted) {
-                m_TenContinueousKanban.append(m_Kanbancode);
+                m_ContinueMH.append(m_Kanbancode);
                 setStackViewPage(m_StackWidget->currentIndex() + 2);
 
             } else {
@@ -297,6 +547,8 @@ void MainWindow::on_CancelButtonClicked()
         m_Kanbancode.clear();
         m_ScanStaffID->setStaffIDLable("SCAN");
         m_SCanKanbanCode->setKanbanLable("SCAN");
+        m_SCanKanbanCode->setMaAB1("");
+        m_SCanKanbanCode->setMaAB2("");
         m_ErrorTable->clearCheckedItems();
         setStackViewPage(SCAN_STAFF_PAGE);
     }
@@ -318,6 +570,8 @@ void MainWindow::previousStackView()
 void MainWindow::onErrorSessionFinished()
 {
     m_SCanKanbanCode->setKanbanLable("SCAN");
+    m_SCanKanbanCode->setMaAB1("");
+    m_SCanKanbanCode->setMaAB2("");
     m_Kanbancode = "";
     setStackViewPage(SCAN_KANBAN_PAGE);
 }
@@ -376,4 +630,13 @@ void MainWindow::onFramedataReady(QPixmap pixmap)
     if (m_CameraStream != nullptr) {
         m_CameraStream->setImage(pixmap);
     }
+}
+
+void MainWindow::onSelectLineClicked()
+{
+    m_SelectLineDialog = new wSelectLine();
+    m_SelectLineDialog->setFixedSize(800,480);
+
+    m_SelectLineDialog->exec();
+    delete m_SelectLineDialog;
 }

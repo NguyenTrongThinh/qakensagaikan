@@ -1,24 +1,23 @@
-#ifndef CSETTINGDIALOG_H
-#define CSETTINGDIALOG_H
+#ifndef WSELECTLINE_H
+#define WSELECTLINE_H
 
 #include <QDialog>
 #include "cNumberPad2.h"
 #include <QLineEdit>
 
 namespace Ui {
-class cSettingDialog;
+class wSelectLine;
 }
 
-class cSettingDialog : public QDialog
+class wSelectLine : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cSettingDialog(QWidget *parent = 0);
-    ~cSettingDialog();
+    explicit wSelectLine(QWidget *parent = 0);
+    ~wSelectLine();
 private:
     cNumberPad2 *m_NumberPad = nullptr;
-    QLineEdit *m_lineedit = nullptr;
 
 private:
     void setLineEditText(const QString &text);
@@ -34,11 +33,9 @@ private slots:
 
 public slots:
 
-    void focusTimeEdit();
-    void focusNumOfRepeatEdit();
-    void focusNUmOfSameEdit();
 private:
-    Ui::cSettingDialog *ui;
+    Ui::wSelectLine *ui;
 };
 
-#endif // CSETTINGDIALOG_H
+
+#endif // WSELECTLINE_H

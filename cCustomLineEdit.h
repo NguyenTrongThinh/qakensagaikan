@@ -16,10 +16,12 @@ public:
     void focusOutEvent(QFocusEvent *event);
     void focusInEvent(QFocusEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *evt);
 signals:
     void sigFocusInEvent();
     void sigFocusOutEvent();
     void sigMouseReleaseEvent();
+    void sigMousePressEvent();
 };
 
 #endif // CCUSTOMLINEEDIT_H
