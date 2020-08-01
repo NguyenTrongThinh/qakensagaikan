@@ -31,10 +31,12 @@ public:
     QList<QPair<QString, QString>> getListTablecontent(QJsonArray tableArray, QString tableName);
     int postDataToServer(const cDataSession &dataSession);
     int postPictureToServer(const cPicturesData &dataSession);
+    QString getDateTime();
     void setServerAddress(QString addr);
     QString getServerAddress();
     bool getSyncPicturesStatus();
     bool getSyncDataStatus();
+
 private:
     static cServerUtils *m_Instance;
     QString m_ServerAddress;

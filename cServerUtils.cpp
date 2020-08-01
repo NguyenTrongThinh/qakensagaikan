@@ -400,6 +400,42 @@ int cServerUtils::postPictureToServer(const cPicturesData &dataSession)
     return retVal;
 }
 
+QString cServerUtils::getDateTime()
+{
+    QNetworkRequest request;
+    QNetworkReply *reply;
+    QTimer timer;
+    QEventLoop loop;
+    QString retVal;
+    timer.setSingleShot(true);
+    request.setUrl(QUrl(m_ServerAddress + "/thoigian"));
+    reply = m_NetworkAccessManager->get(request);
+    connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    timer.start(10000);
+    loop.exec();
+    if(timer.isActive()) {
+        timer.stop();
+        if(reply->error() > 0) {
+          qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
+        }
+        else {
+          int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+          qDebug() << "Http Status Code: " << v;
+          if (v >= 200 && v < 300) {
+            QByteArray readData = reply->readAll();
+            qDebug() << "DateTime From Server: " << readData;
+            retVal = QString::fromLatin1(readData);
+          }
+        }
+    } else {
+       disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+       reply->abort();
+    }
+    delete reply;
+    return retVal;
+}
+
 void cServerUtils::setServerAddress(QString addr)
 {
     m_ServerAddress = addr;

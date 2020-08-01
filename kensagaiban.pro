@@ -29,6 +29,14 @@ CONFIG += c++11
 
 LIBS += -ludev -lcurl
 
+INCLUDEPATH += \
+              ${OE_QMAKE_INCDIR_QT}/../include/glib-2.0 \
+              ${OE_QMAKE_INCDIR_QT}/../lib/glib-2.0/include \
+              ${OE_QMAKE_INCDIR_QT}/../include/libnm \
+              ${OE_QMAKE_INCDIR_QT}/../include/ModemManager \
+              ${OE_QMAKE_INCDIR_QT}/../include \
+
+
 SOURCES += \
     cAB1CodeParserUtils.cpp \
     cAB2CodeParserUtils.cpp \

@@ -477,9 +477,7 @@ QString cConfigureUtils::getIpAddress()
     QProcess process;
     process.start("hostname -I");
     process.waitForFinished(-1); // will wait forever until finished
-
     QString stdout = process.readAllStandardOutput().trimmed();
-
     return stdout;
 }
 

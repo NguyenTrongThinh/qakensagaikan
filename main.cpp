@@ -19,13 +19,14 @@
 #include "cPicturesUtils.h"
 #include "cPicturesData.h"
 #include <QDebug>
+#include <QTimer>
 #include "cdatamh.h"
 
 
 void myMessageHandler(QtMsgType type,const QMessageLogContext &context,const QString &msg)
 {
     const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile outFile(homeFolder + "/" + "kanbanlog.txt");
+    QFile outFile(homeFolder + "/" + "kensagaikanlog.txt");
 
     if (outFile.exists()) {
         qint64 sizeInByte = outFile.size();
@@ -125,12 +126,13 @@ int main(int argc, char *argv[])
         // Delete old picture database and pictures here;
 
         cServerUtils *m_serverutils = cServerUtils::instance();
+
 //        splash.showMessage("Cập nhật bảng mã lỗi...", Qt::AlignHCenter | Qt::AlignTop, Qt::blue);
         a.processEvents();
         QString serveraddr =  cConfigureUtils::getServerAdddress();
         qDebug() << "Server Address: " << serveraddr;
         m_serverutils->setServerAddress(serveraddr);
-
+        //Start Timer here
         QJsonArray mahangTable = m_serverutils->getMHTable();
         QList<cDataMH> tableMH = m_serverutils->getListDataMH(mahangTable);
         if(tableMH.count() > 0)
@@ -192,6 +194,14 @@ int main(int argc, char *argv[])
         QObject::connect(m_ASyncWorker, SIGNAL(sigPostDataToServer(QList<cDataSession>)), m_serverutils, SLOT(postDataToServerFromThread(QList<cDataSession>)));
         m_ASyncWorkerThread->start();
 
+        QTimer dateTimer;
+        dateTimer.setInterval(5000);
+        a.connect(&dateTimer, &QTimer::timeout, [m_serverutils] () {
+            QString dateTime = m_serverutils->getDateTime();
+            qDebug() << "Set Date Time every 5s: " << dateTime;
+            system(QString("timedatectl set-time '%1'").arg(dateTime).toLatin1().data());
+        });
+        dateTimer.start();
         a.processEvents();
         MainWindow w;
         QObject::connect(m_ASyncWorker, SIGNAL(sigSyncDone()), &w, SLOT(onDatabaseSyncDone()));
