@@ -11,7 +11,7 @@ QT       += core gui network sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = kanban
+TARGET = kensagaikan
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -27,7 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-LIBS += -ludev
+LIBS += -ludev -lcurl
 
 SOURCES += \
     cAB1CodeParserUtils.cpp \
@@ -48,7 +48,7 @@ SOURCES += \
         cStaffIDParserUtils.cpp \
         cTitleBarWidget.cpp \
         cWifiWidget.cpp \
-    cdatamh.cpp \
+        cdatamh.cpp \
         libse660/src/se660.c \
         libse660/src/se660_detector_helper.c \
         main.cpp \
@@ -136,18 +136,17 @@ FORMS += \
     cMessageBox.ui \
     cPasswordDialog.ui \
     wSelectLine.ui
+
 CONFIG(raspberry) {
     message(Building with Raspberry support.)
     LIBS += -lopencv_core        \
             -lopencv_highgui     \
             -lopencv_imgproc     \
             -lopencv_features2d  \
-            -lopencv_calib3d
+            -lopencv_calib3d    \
+            -lopencv_videoio \
 } else {
     message(Build for PC.)
-#    INCLUDEPATH += /home/triet/Downloads/opencv-3.4.10/opencv-3.2.0/build/include
-
-#    LIBS += -L"/home/triet/Downloads/opencv-3.4.10/build/build/lib"
     LIBS += -lopencv_core        \
             -lopencv_highgui     \
             -lopencv_imgcodecs   \
@@ -157,10 +156,6 @@ CONFIG(raspberry) {
             -lopencv_videoio
     DEFINES += "BUILD_PC"
 }
-
-LIBS += -lcurl
-
-INCLUDEPATH += /usr/include/curl
 
 # Tren Raspberry remove -lopencv_imgproc -lopencv_videoio
 # Default rules for deployment.
