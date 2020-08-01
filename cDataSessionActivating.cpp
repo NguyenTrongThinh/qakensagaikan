@@ -5,7 +5,7 @@ cDataSessionActivating::cDataSessionActivating()
 }
 
 cDataSessionActivating::cDataSessionActivating(const cDataSessionActivating &other)
-    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_maab1(other.m_maab1), m_maab2(other.m_maab2), m_Makanban(other.m_Makanban), m_Pictures(other.m_Pictures)
+    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_Makanban(other.m_Makanban), m_maab1(other.m_maab1), m_maab2(other.m_maab2), m_Pictures(other.m_Pictures)
 {
 
 }
