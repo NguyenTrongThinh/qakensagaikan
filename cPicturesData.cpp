@@ -1,5 +1,5 @@
 #include "cPicturesData.h"
-
+// :
 cPicturesData::cPicturesData()
 {
 

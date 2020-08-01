@@ -65,6 +65,7 @@ void wErrorTable::setAB1(QString ab1)
     if(ab1.isEmpty() == false)
     {
         m_AB1 = ab1;
+        ui->lbAB1->setText(ab1.toUpper());
     }
     else
     {
@@ -78,6 +79,7 @@ void wErrorTable::setAB2(QString ab2)
     if(ab2.isEmpty() == false)
     {
         m_AB2 = ab2;
+        ui->lbAB2->setText(ab2.toUpper());
     }
     else
     {
@@ -159,11 +161,13 @@ void wErrorTable::onButtonClicked(QString label)
         cDataSessionActivating tempDataSession = m_DataBase->getTempSession();
         dataSession.setHinh(tempDataSession.getPicturesList());
         dataSession.setmnv(cStaffIDParserUtils::getMNV(m_MNV));
-        dataSession.settime(QDateTime::currentDateTime().toString("ddMMyyhhmmss"));
+        dataSession.settime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        qDebug() << "================> time: " << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
         dataSession.setMHCode(cKanbanParserUtils::getMH(m_MH));
         dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_MH));
         dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_MH));
         dataSession.setLine(cConfigureUtils::getLine());
+        qDebug() << "LineeeeeeeeeeeEEEE: " << dataSession.getLine();
 
         dataSession.setdeviceid(cConfigureUtils::getIpAddress());
         dataSession.setMaAB1(cAB1CodeParserUtils::getAB1(m_AB1));
@@ -208,6 +212,7 @@ void wErrorTable::onButtonClicked(QString label)
         }
         dataSession.setloi(loi);
         if (!inValidDataFound) {
+            qDebug() << "LineeeeeeeeeeeEEEE: " << dataSession.getLine();
             bool retVal = m_DataBase->insertHistoryTransaction(dataSession, cSQliteDatabase::UNSUBMITED);
             if (retVal)
                 m_DataBase->deleteTempSession();

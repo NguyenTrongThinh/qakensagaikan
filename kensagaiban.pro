@@ -158,6 +158,10 @@ CONFIG(raspberry) {
     DEFINES += "BUILD_PC"
 }
 
+LIBS += -lcurl
+
+INCLUDEPATH += /usr/include/curl
+
 # Tren Raspberry remove -lopencv_imgproc -lopencv_videoio
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

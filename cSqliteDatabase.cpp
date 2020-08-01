@@ -186,7 +186,7 @@ bool cSQliteDatabase::createTransactionTable()
     QSqlQuery query = QSqlQuery(m_Database);
     QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv TEXT, time TEXT,\
                  deviceid TEXT, line TEXT, makanban TEXT, ngayin TEXT, nameplate TEXT, maab1 TEXT, ngayinmaab1 TEXT,\
-                 nameplateab1 TEXT, prefixab1 TEXT, maab2 TEXT, ngayinmaab2 TEXT, namplateab2 TEXT, pretValrefixab2 TEXT,\
+                 nameplateab1 TEXT, prefixab1 TEXT, maab2 TEXT, ngayinmaab2 TEXT, nameplateab2 TEXT, prefixab2 TEXT,\
                  loi TEXT, ca TEXT, hinh TEXT, submit INTEGER)").arg(transactiontable);
     query.prepare(cmd);
     query.exec();
@@ -222,6 +222,8 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
     QString nameplateab2 = dataSession.getNamePlateAB2();
     QString prefixab2 = dataSession.getPrefixAB2();
     QString line = dataSession.getLine();
+    qDebug() << "Line==========================: " << dataSession.getLine();
+    qDebug() << "Line==========================: " << line;
     QString ca = dataSession.getca();
     QString deviceid = dataSession.getdeviceid();
     QList<QPair<QString, int>> errorList = dataSession.getloi();
@@ -239,40 +241,39 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
         if (i < (picturesList.count() - 1))
             hinh.append(":");
     }
+
     QString cmd = QString("INSERT INTO history (mnv, time, deviceid, line, makanban, ngayin,\
              nameplate, maab1, ngayinmaab1, nameplateab1, prefixab1, maab2, ngayinmaab2,\
              nameplateab2, prefixab2, loi, ca, hinh, submit) \
-             VALUES (\"%1\", \"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\", \"%9\", \"%10\", \"%11\", \"%12\", \"%13\", \"%14\", \"%15\", \"%16\", \"%17\", \"%18\", %19)")
-            .arg(mnv)
-            .arg(time)
-            .arg(deviceid)
-            .arg(line)
-            .arg(mahang)
-            .arg(dateprintMH)
-            .arg(nameplateMH)
-            .arg(maab1)
-            .arg(dateprintab1)
-            .arg(nameplateab1)
-            .arg(prefixab1)
-            .arg(maab2)
-            .arg(dateprintab2)
-            .arg(nameplateab2)
-            .arg(prefixab2)
-            .arg(loi)
-            .arg(ca)
-            .arg(hinh)
-            .arg(submited);
-
+             VALUES (:mnv, :time, :deviceid, :line, :makanban, :ngayin, :nameplate, :maab1, :ngayinmaab1, :nameplateab1, :prefixab1, :maab2, :ngayinmaab2, :nameplateab2, :prefixab2, :loi, :ca, :hinh, :submit)");
     QSqlQuery query = QSqlQuery(m_Database);
-
-    qDebug() << "Command: " << cmd;
     query.prepare(cmd);
+    query.bindValue(":mnv", mnv);
+    query.bindValue(":time", time);
+    query.bindValue(":deviceid", deviceid);
+    query.bindValue(":line", line);
+    query.bindValue(":makanban", mahang);
+    query.bindValue(":ngayin", dateprintMH);
+    query.bindValue(":nameplate", nameplateMH);
+    query.bindValue(":maab1", maab1);
+    query.bindValue(":ngayinmaab1", dateprintab1);
+    query.bindValue(":nameplateab1", nameplateab1);
+    query.bindValue(":prefixab1", prefixab1);
+    query.bindValue(":maab2", maab2);
+    query.bindValue(":ngayinmaab2", dateprintab2);
+    query.bindValue(":nameplateab2", nameplateab2);
+    query.bindValue(":prefixab2", prefixab2);
+    query.bindValue(":loi", loi);
+    query.bindValue(":ca", ca);
+    query.bindValue(":hinh", hinh);
+    query.bindValue(":submit", submited);
+    qDebug() << "Command: " << cmd;
+
     query.exec();
     retVal = m_Database.transaction();
     if (retVal)
         retVal = m_Database.commit();
     query.clear();
-    qDebug() << "========> " << retVal;
     return retVal;
 }
 
@@ -325,7 +326,6 @@ QList<cDataSession> cSQliteDatabase::getUnsubmitedTransaction()
         retVal.append(datasession);
         loi.clear();
     }
-    qDebug() << "========> ";
     query.clear();
     return retVal;
 }
@@ -503,7 +503,7 @@ bool cSQliteDatabase::createTempSessionTable()
             return retVal;
     }
     QSqlQuery query = QSqlQuery(m_Database);
-    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(12), makanban CHAR(17), tenbangloi TEXT, hinh TEXT)").arg(tempsession);
+    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(12), makanban CHAR(17), tenbangloi TEXT, maab1 TEXT, maab2 TEXT, hinh TEXT)").arg(tempsession);
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -556,11 +556,13 @@ bool cSQliteDatabase::insertTempSession(cDataSessionActivating activatingSession
                 sqliteHinhList.append(":");
             }
         }
-        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\")")
+        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, maab1, maab2, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\")")
                 .arg(tempsession)
                 .arg(activatingSession.getMNV())
                 .arg(activatingSession.getMaKanban())
                 .arg(activatingSession.getTenBangLoi())
+                .arg(activatingSession.getMaAB1())
+                .arg(activatingSession.getMaAB2())
                 .arg(sqliteHinhList);
         query.prepare(cmd);
         query.exec();
@@ -625,10 +627,12 @@ cDataSessionActivating cSQliteDatabase::getTempSession()
         retVal.setMNV(query.value(1).toString());
         retVal.setMaKanban(query.value(2).toString());
         retVal.setTenBangLoi(query.value(3).toString());
-        if (query.value(4).toString().isEmpty())
+        retVal.setMaAB1(query.value(4).toString());
+        retVal.setMaAB2(query.value(5).toString());
+        if (query.value(6).toString().isEmpty())
             pictureList.clear();
         else
-            pictureList = query.value(4).toString().split(":");
+            pictureList = query.value(6).toString().split(":");
         retVal.setPicturesList(pictureList);
         break;
     }

@@ -15,8 +15,16 @@
 #include <QThread>
 #include <QHostAddress>
 #include <QNetworkInterface>
+#include <QMimeDatabase>
+#include <curl/curl.h>
 
 cServerUtils *cServerUtils::m_Instance = nullptr;
+
+/* holder for curl fetch */
+struct curl_fetch_st {
+    char *payload;
+    size_t size;
+};
 
 
 cServerUtils::cServerUtils(QObject *parent) : QObject(parent)
@@ -218,14 +226,70 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     request.setRawHeader("Content-Type", "application/json");
     QVariantMap sessionData;
     sessionData.insert("manhanvien", dataSession.getmnv());
-    sessionData.insert("thoigiantest", dataSession.gettime());
+    sessionData.insert("thoigiantest",dataSession.gettime());
+    sessionData.insert("line", dataSession.getLine().toUInt());
+    qDebug() << "Line: " << dataSession.getLine();
+    qDebug() << "Line: " << dataSession.getLine().toUInt();
     sessionData.insert("mahang", dataSession.getMHCode());
     sessionData.insert("deviceid", dataSession.getdeviceid());
     sessionData.insert("ngayin", dataSession.getMHDatePrint());
     sessionData.insert("nameplate", dataSession.getMHNamePlate());
-    sessionData.insert("block", dataSession.getblock());
+    QVariantList maablist;
+    QVariantMap maab1;
+    QVariantMap maab2;
+    maablist.clear();
+    if(dataSession.getMaAB1() != "")
+    {
+        if(dataSession.getMaAB2() != "")
+        {
+            maab1.insert("tenmaab", dataSession.getMaAB1());
+            maab1.insert("ngayinab", dataSession.getDatePrintAB1());
+            maab1.insert("nameplatab", dataSession.getNamePlateAB1());
+            maab1.insert("prefix", dataSession.getPrefixAB1());
+            maab2.insert("tenmaab", dataSession.getMaAB2());
+            maab2.insert("ngayinab", dataSession.getDatePrintAB2());
+            maab2.insert("nameplatab", dataSession.getNamePlateAB2());
+            maab2.insert("prefix", dataSession.getPrefixAB2());
+            maablist.append(maab1);
+            maablist.append(maab2);
+
+        }
+        else
+        {
+            maab1.insert("tenmaab", dataSession.getMaAB1());
+            maab1.insert("ngayinab", dataSession.getDatePrintAB1());
+            maab1.insert("nameplatab", dataSession.getNamePlateAB1());
+            maab1.insert("prefix", dataSession.getPrefixAB1());
+            maablist.append(maab1);
+        }
+
+    }
+    else
+    {
+        if(dataSession.getMaAB2() != "")
+        {
+            maab2.insert("tenmaab", dataSession.getMaAB2());
+            maab2.insert("ngayinab", dataSession.getDatePrintAB2());
+            maab2.insert("nameplatab", dataSession.getNamePlateAB2());
+            maab2.insert("prefix", dataSession.getPrefixAB2());
+            maablist.append(maab2);
+        }
+        else
+        {
+            // do nothing
+        }
+    }
+    sessionData.insert("maab", maablist);
     sessionData.insert("ca", dataSession.getca());
-    sessionData.insert("hinh", dataSession.getHinh());
+    QVariantList hinhList;
+    QVariantMap hinh;
+    hinhList.clear();
+    for (int j = 0; j < dataSession.getHinh().count(); j++)
+    {
+        hinh.insert("name", dataSession.getHinh().at(j));
+        hinhList.append(hinh);
+    }
+    sessionData.insert("tenhinh", hinhList);
     QVariantList loiList;
     QVariantMap loi;
     loiList.clear();
@@ -241,7 +305,7 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
 
     QNetworkReply *reply = m_NetworkAccessManager->post(request, itemdoc.toJson());
 
-
+    qDebug() << "Http Request: " << itemdoc;
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     timer.start(10000);
@@ -271,59 +335,68 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
 int cServerUtils::postPictureToServer(const cPicturesData &dataSession)
 {
     int retVal = 400;
-    QTimer timer;
-    QEventLoop loop;
+    CURL *curl;                                               /* curl handle */
+    CURLcode res;                                         /* curl result code */
     QString filePath = dataSession.getLocationOnDisk();
 
     qDebug() << "File Path: " << filePath;
+    /* init curl handle */
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    if ((curl = curl_easy_init()) == nullptr)
+    {
+        /* log error */
+        qDebug() << "postPictureToServer: ERROR: Failed to create curl handle in fetch_session";
+    }
+    else
+    {
+        struct curl_fetch_st curl_fetch;                        /* curl fetch struct */
+        struct curl_fetch_st *cf = &curl_fetch;                 /* pointer to fetch struct */
 
-    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+        /* url to test site */
+        QByteArray brUrl = QString(QUrl(m_ServerAddress + "/dulieuhinh").toString().toLatin1().data()).toLocal8Bit();
+        char *url = brUrl.data();
 
-    QHttpPart contentType;
-    contentType.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("multipart/form-data"));
+        qDebug() << "postPictureToServer:brUrl: " + brUrl;
 
-    QHttpPart imagePart;
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
+        struct curl_slist *headers = nullptr;
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_mime *mime;
+        curl_mimepart *part;
+        mime = curl_mime_init(curl);
+        part = curl_mime_addpart(mime);
+        curl_mime_name(part, "name");
+        curl_mime_filedata(part, filePath.toLocal8Bit().data());
+        curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+        res = curl_easy_perform(curl);
+        curl_mime_free(mime);
 
-    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(QString("form-data; name=\"filename\"; filename=\"%1\";").arg(filePath)));
-    imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-    QFile *file = new QFile(filePath);
-    if (file->exists()) {
-        if (file->open(QIODevice::ReadOnly)) {
-            imagePart.setBodyDevice(file);
-            file->setParent(multiPart);
-            multiPart->append(contentType);
-            multiPart->append(imagePart);
+        /* cleanup curl handle */
+        curl_easy_cleanup(curl);
 
-            QNetworkRequest request;
-            request.setUrl(QUrl(m_ServerAddress + "/uploadimage"));
-            QNetworkReply *reply = m_NetworkAccessManager->post(request, multiPart);
-            multiPart->setParent(reply);
+        /* free headers */
+        curl_slist_free_all(headers);
 
-            connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-            connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-            timer.start(10000);
-            loop.exec();
-            if(timer.isActive()) {
-                timer.stop();
-                if(reply->error() > 0) {
-                  qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
-                }
-                else {
-                  int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                  qDebug() << "Http Status Code: " << v;
-                  retVal = v;
-                  if (v >= 200 && v < 300) {
-                    QByteArray readData = reply->readAll();
-                    qDebug() << "Http Status code: " << readData;
-                  }
-                }
-            } else {
-               disconnect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-               reply->abort();
-            }
-            delete reply;
+        /* check return code */
+        if (res != CURLE_OK || cf->size < 1)
+        {
+            /* log error */
+            qDebug() << (QString("ERROR: Failed to fetch url (%1) - curl said: %2").arg(QString(brUrl))
+                       .arg(QString::fromLocal8Bit(curl_easy_strerror(res))));
+
+        }
+        else
+        {
+            retVal = 200;
+
         }
     }
+
+    curl_global_cleanup();
+
     return retVal;
 }
 

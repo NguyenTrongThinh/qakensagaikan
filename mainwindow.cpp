@@ -119,6 +119,9 @@ void MainWindow::setStackViewPage(int page)
             m_CurrentSessionData.setMaKanban(m_Kanbancode.toUpper());
             m_CurrentSessionData.setMNV(m_StaffID.toUpper());
             m_CurrentSessionData.setTenBangLoi(m_UserSelectedTableName.toUpper());
+            qDebug() << "aaaaaaaaaaaaaaaaaaaaaaaa" << m_MaAB1 << m_MaAB2;
+            m_CurrentSessionData.setMaAB1(m_MaAB1.toUpper());
+            m_CurrentSessionData.setMaAB2(m_MaAB2.toUpper());
             m_Database->insertTempSession(m_CurrentSessionData);
             if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
                 m_CheckingKanban->onBtnOKClicked();
@@ -164,7 +167,7 @@ void MainWindow::onCheckingKanbanOKClicked()
     cDataSessionActivating tempDataSession = m_Database->getTempSession();
     dataSession.setHinh(tempDataSession.getPicturesList());
     dataSession.setmnv(cStaffIDParserUtils::getMNV(m_StaffID));
-    dataSession.settime(QDateTime::currentDateTime().toString("ddMMyyhhmmss"));
+    dataSession.settime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     dataSession.setMHCode(cKanbanParserUtils::getMH(m_Kanbancode));
     dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_Kanbancode));
     dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_Kanbancode));
@@ -503,8 +506,15 @@ void MainWindow::onScannerReady(const QString &data)
         }
         else {
             m_Kanbancode = m_CurrentSessionData.getMaKanban();
+            m_MaAB1 = m_CurrentSessionData.getMaAB1();
+            m_MaAB2 = m_CurrentSessionData.getMaAB2();
             m_ErrorTable->setMH(m_Kanbancode.toUpper());
             m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
+            m_CheckingKanban->setMAB1(m_MaAB1.toUpper());
+            m_CheckingKanban->setMAB2(m_MaAB2.toUpper());
+            m_CheckingKanban->setLine(cConfigureUtils::getLine());
+            m_ErrorTable->setAB1(m_MaAB1.toUpper());
+            m_ErrorTable->setAB2(m_MaAB2.toUpper());
             disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
             cMessageBox *m_MessageBox = new cMessageBox();
             m_MessageBox->setText("Kanban đang kiểm tra dang dở");
@@ -590,7 +600,7 @@ void MainWindow::onChupAnhClicked()
 {
     if (m_Camera != nullptr) {
          qDebug() << "Chup Anh Clicked";
-         m_Camera->setKanbanCode(m_Kanbancode);
+         m_Camera->setKanbanCode(cKanbanParserUtils::getMH(m_Kanbancode));
          m_Camera->requestMethod(cCameraWorker::STREAMANH);
          nextStackView();
     }

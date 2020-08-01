@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1104</width>
-    <height>704</height>
+    <height>795</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -116,7 +116,9 @@
           <string notr="true">color: rgb(52, 101, 164);
 border-color: rgb(46, 52, 54);
 background-color: rgb(255, 255, 255);
-border: 1px solid black</string>
+border: 1px solid black;
+border-radius: 15px
+</string>
          </property>
          <property name="text">
           <string/>
@@ -188,7 +190,8 @@ border: 1px solid black</string>
           <string notr="true">color: rgb(52, 101, 164);
 border-color: rgb(46, 52, 54);
 background-color: rgb(255, 255, 255);
-border: 1px solid black</string>
+border: 1px solid black;
+border-radius: 15px</string>
          </property>
          <property name="text">
           <string/>
@@ -257,7 +260,8 @@ border: 1px solid black</string>
           <string notr="true">color: rgb(52, 101, 164);
 border-color: rgb(46, 52, 54);
 background-color: rgb(255, 255, 255);
-border: 1px solid black</string>
+border: 1px solid black;
+border-radius: 15px</string>
          </property>
          <property name="text">
           <string/>

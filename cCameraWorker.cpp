@@ -84,7 +84,7 @@ bool cCameraWorker::saveImage(QString kanbanCode, Mat frame)
     if (!dir.exists())
         retVal = dir.mkpath(sDir);
     if (retVal) {
-        QString filename = cConfigureUtils::getWifiMac() + "_" + kanbanCode + "_" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss")  + ".jpg";
+        QString filename = "image_" + cConfigureUtils::getIpAddress() + "_" + kanbanCode + "_" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss")  + ".jpg";
         filename = dir.absolutePath() + "/" + filename;
         Mat imageCV = frame;
         cvtColor(imageCV, imageCV, CV_RGB2BGR);
@@ -94,6 +94,7 @@ bool cCameraWorker::saveImage(QString kanbanCode, Mat frame)
         else
             m_lastFileName = "";
     }
+    qDebug() << m_lastFileName;
     return retVal;
 }
 

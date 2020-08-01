@@ -109,17 +109,6 @@ border-radius: 10px;</string>
               <property name="verticalSpacing">
                <number>0</number>
               </property>
-              <item row="0" column="1">
-               <widget class="QLabel" name="lblMNV">
-                <property name="font">
-                 <font>
-                  <pointsize>12</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="font">
@@ -133,6 +122,47 @@ border-radius: 10px;</string>
                 </property>
                 <property name="text">
                  <string>MNV: </string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(252, 233, 79);</string>
+                </property>
+                <property name="text">
+                 <string>AB1:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblMH">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="lblMNV">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
                 </property>
                </widget>
               </item>
@@ -152,15 +182,31 @@ border-radius: 10px;</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="lblMH">
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_2">
                 <property name="font">
                  <font>
-                  <pointsize>12</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(252, 233, 79);</string>
+                </property>
+                <property name="text">
+                 <string>AB2:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lbAB1">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="lbAB2">
                 <property name="text">
                  <string/>
                 </property>

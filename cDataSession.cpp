@@ -1,12 +1,12 @@
 #include "cDataSession.h"
-
+#include <QDebug>
 
 cDataSession::cDataSession()
 {
 
 }
 cDataSession::cDataSession(const cDataSession &other)
-    :m_mnv(other.m_mnv), m_time(other.m_time), m_MHCode(other.m_MHCode), m_deviceid(other.m_deviceid), m_MHDatePrint(other.m_MHDatePrint), m_MHNamePlate(other.m_MHNamePlate),  m_loi(other.m_loi), m_block(other.m_block), m_ca(other.m_ca), m_Hinh(other.m_Hinh), m_maab1(other.m_maab1), m_prefixab1(other.m_prefixab1), m_dateprintab1(other.m_dateprintab1), m_nameplateab1(other.m_nameplateab1), m_maab2(other.m_maab2), m_prefixab2(other.m_prefixab2), m_dateprintab2(other.m_dateprintab2), m_nameplateab2(other.m_nameplateab2)
+    :m_mnv(other.m_mnv), m_time(other.m_time), m_MHCode(other.m_MHCode), m_line(other.m_line), m_deviceid(other.m_deviceid), m_MHDatePrint(other.m_MHDatePrint), m_MHNamePlate(other.m_MHNamePlate),  m_loi(other.m_loi), m_block(other.m_block), m_ca(other.m_ca), m_Hinh(other.m_Hinh), m_maab1(other.m_maab1), m_prefixab1(other.m_prefixab1), m_dateprintab1(other.m_dateprintab1), m_nameplateab1(other.m_nameplateab1), m_maab2(other.m_maab2), m_prefixab2(other.m_prefixab2), m_dateprintab2(other.m_dateprintab2), m_nameplateab2(other.m_nameplateab2)
 {
 
 }

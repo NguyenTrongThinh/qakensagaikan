@@ -49,7 +49,7 @@
           <string notr="true">background-color: rgb(52, 101, 164); color: rgb(238, 238, 236); font-size: 30px; font-style: bold;</string>
          </property>
          <property name="text">
-          <string>Chọn line</string>
+          <string>CHỌN LINE</string>
          </property>
         </widget>
        </item>
