@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network sql
+QT       += core gui network sql serialport
 # need command line iwgetid
 
 # Insert data picture to SQLiteDatabase
@@ -46,10 +46,13 @@ SOURCES += \
         cConfigureUtils.cpp \
         cCustomLineEdit.cpp \
         cDataSession.cpp \
+    cDataUtils.cpp \
         cKanbanParserUtils.cpp \
         cNumberPad.cpp \
+    cOperator.cpp \
         cRowErrorWidget.cpp \
         cScannerUtils.cpp \
+    cSerialPortSender.cpp \
         cServerUtils.cpp \
         cSettingButton.cpp \
         cSqliteDatabase.cpp \
@@ -94,10 +97,13 @@ HEADERS += \
         cConfigureUtils.h \
         cCustomLineEdit.h \
         cDataSession.h \
+    cDataUtils.h \
         cKanbanParserUtils.h \
         cNumberPad.h \
+    cOperator.h \
         cRowErrorWidget.h \
         cScannerUtils.h \
+    cSerialPortSender.h \
         cServerUtils.h \
         cSettingButton.h \
         cSqliteDatabase.h \
