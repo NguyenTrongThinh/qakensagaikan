@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QWidget>
+#include <QThread>
 #include <cScannerUtils.h>
 #include <wSelectErrorTable.h>
 #include <cDataSession.h>
@@ -19,6 +20,7 @@
 #include "wCameraStream.h"
 #include "cPasswordDialog.h"
 #include "wSelectLine.h"
+#include "cSerialPortSender.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +35,7 @@ public:
     ~MainWindow();
 private:
     void setStackViewPage(int page);
+    void setOperator(quint8 Operator);
 private:
     Ui::MainWindow *ui;
     cScannerUtils *m_ScannerUtils;
@@ -49,6 +52,8 @@ private:
     cTitleBarWidget *m_Titlebar = nullptr;
     cCameraWorker *m_Camera = nullptr;
     cPasswordDialog *m_passwordDialog = nullptr;
+    cSerialPortSender *serialportSender = nullptr;
+    QThread *workerThread = nullptr;
     int m_NumberOfReturnScanMH = 1;
     int m_NumberOfSameMH = 1;
     int m_MyState = 1;
@@ -59,10 +64,12 @@ private:
     QString m_Kanbancode;
     QString m_MaAB1;
     QString m_MaAB2;
+    QString m_MCUAction;
     QStringList m_TitlebarText;
     QStringList m_ContinueMH;
     QStringList m_TenContinueousKanban;
     bool m_WifiConnected = false;
+    bool m_isMCUConnected = false;
     cDataSessionActivating m_CurrentSessionData;
 private slots:
     void onWifiConnected();
@@ -89,6 +96,9 @@ private slots:
     void onSaveImageSuccess();
     void onFramedataReady(QPixmap pixmap);
     void onSelectLineClicked();
+    void onSerialPortConnected();
+    void onSerialPortDisconnected();
+    void onOperatorStatus(const QList<cOperator> &status);
 };
 
 #endif // MAINWINDOW_H

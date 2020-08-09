@@ -17,6 +17,7 @@ public:
     void setPicturesList(QStringList pictures);
     void setMaAB1(QString maab1);
     void setMaAB2(QString maab2);
+    void setMCUAction(QString mcuaction);
 
     QString getMNV() const;
     QString getMaKanban() const;
@@ -24,12 +25,14 @@ public:
     QStringList getPicturesList() const;
     QString getMaAB1() const;
     QString getMaAB2() const;
+    QString getMCUAction() const;
 private:
     QString m_Mnv;
     QString m_Tenbangloi;
     QString m_Makanban;
     QString m_maab1;
     QString m_maab2;
+    QString m_thaotacmcu;
     QStringList m_Pictures;
 };
 Q_DECLARE_METATYPE(cDataSessionActivating)

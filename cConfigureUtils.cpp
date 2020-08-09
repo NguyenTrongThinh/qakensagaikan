@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QProcess>
 
-#define configureFileName  "kensabonder.cfg"
+#define configureFileName  "kensagaikan.cfg"
 
 
 cConfigureUtils::cConfigureUtils(QObject *parent) : QObject(parent)
@@ -24,8 +24,8 @@ cConfigureUtils::~cConfigureUtils()
 
 void cConfigureUtils::setServerAddress(QString serverAddress)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -53,8 +53,8 @@ void cConfigureUtils::setServerAddress(QString serverAddress)
 
 void cConfigureUtils::setScannerVID(QString vid)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -82,8 +82,8 @@ void cConfigureUtils::setScannerVID(QString vid)
 
 void cConfigureUtils::setScannerPID(QString pid)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -109,10 +109,68 @@ void cConfigureUtils::setScannerPID(QString pid)
     }
 }
 
+void cConfigureUtils::setMCUVID(QString vid)
+{
+    const QString configFolder = "/etc/default";
+     QFile cfgFile(configFolder + "/" + configureFileName);
+     QJsonDocument itemDoc;
+     QVariantMap settingContent;
+     if(cfgFile.open(QIODevice::ReadWrite)) {
+         QTextStream in(&cfgFile);
+         QString content = in.readAll();
+         cfgFile.close();
+         if (!content.isEmpty()) {
+             itemDoc = QJsonDocument::fromJson(content.toLatin1());
+             settingContent = itemDoc.object().toVariantMap();
+             settingContent.remove("mcuvid");
+             settingContent.insert("mcuvid", vid);
+             itemDoc = QJsonDocument::fromVariant(settingContent);
+             cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+             cfgFile.write(itemDoc.toJson());
+             cfgFile.close();
+         } else {
+             settingContent.insert("mcuvid", vid);
+             itemDoc = QJsonDocument::fromVariant(settingContent);
+             cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+             cfgFile.write(itemDoc.toJson());
+             cfgFile.close();
+         }
+     }
+}
+
+void cConfigureUtils::setMCUPID(QString pid)
+{
+    const QString configFolder = "/etc/default";
+     QFile cfgFile(configFolder + "/" + configureFileName);
+     QJsonDocument itemDoc;
+     QVariantMap settingContent;
+     if(cfgFile.open(QIODevice::ReadWrite)) {
+         QTextStream in(&cfgFile);
+         QString content = in.readAll();
+         cfgFile.close();
+         if (!content.isEmpty()) {
+             itemDoc = QJsonDocument::fromJson(content.toLatin1());
+             settingContent = itemDoc.object().toVariantMap();
+             settingContent.remove("mcupid");
+             settingContent.insert("mcupid", pid);
+             itemDoc = QJsonDocument::fromVariant(settingContent);
+             cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+             cfgFile.write(itemDoc.toJson());
+             cfgFile.close();
+         } else {
+             settingContent.insert("mcupid", pid);
+             itemDoc = QJsonDocument::fromVariant(settingContent);
+             cfgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+             cfgFile.write(itemDoc.toJson());
+             cfgFile.close();
+         }
+     }
+}
+
 void cConfigureUtils::setDelayValue(int sec)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -140,8 +198,8 @@ void cConfigureUtils::setDelayValue(int sec)
 
 void cConfigureUtils::setPicturesDir(QString dir)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -169,8 +227,8 @@ void cConfigureUtils::setPicturesDir(QString dir)
 
 void cConfigureUtils::setManaualMode(QString mode)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -198,8 +256,8 @@ void cConfigureUtils::setManaualMode(QString mode)
 
 void cConfigureUtils::setNumOfSameScan(int num)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -227,8 +285,8 @@ void cConfigureUtils::setNumOfSameScan(int num)
 
 void cConfigureUtils::setPassword(QString password)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -256,8 +314,8 @@ void cConfigureUtils::setPassword(QString password)
 
 void cConfigureUtils::setLine(QString line)
 {
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
     QJsonDocument itemDoc;
     QVariantMap settingContent;
     if(cfgFile.open(QIODevice::ReadWrite)) {
@@ -287,9 +345,9 @@ void cConfigureUtils::setLine(QString line)
 QString cConfigureUtils::getServerAdddress()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
-
+    const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
+    qDebug() << "Home Folder: " << configFolder;
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
             QTextStream in(&cfgFile);
@@ -308,9 +366,9 @@ QString cConfigureUtils::getServerAdddress()
 QString cConfigureUtils::getScannerVid()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
-    qDebug() << homeFolder + "/" + configureFileName;
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
+    qDebug() << configFolder + "/" + configureFileName;
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -330,8 +388,8 @@ QString cConfigureUtils::getScannerVid()
 QString cConfigureUtils::getScannerPid()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -342,6 +400,50 @@ QString cConfigureUtils::getScannerPid()
                 QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
                 QJsonObject itemObj = itemDoc.object();
                 retVal = itemObj.take("scannerpid").toString();
+            }
+        }
+    }
+    return retVal;
+}
+
+QString cConfigureUtils::getMCUVid()
+{
+    QString retVal = "";
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
+    qDebug() << configFolder + "/" + configureFileName;
+
+    if (cfgFile.exists()) {
+        if(cfgFile.open(QIODevice::ReadOnly)) {
+            QTextStream in(&cfgFile);
+            QString content = in.readAll();
+            cfgFile.close();
+            if (!content.isEmpty()) {
+                QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
+                QJsonObject itemObj = itemDoc.object();
+                retVal = itemObj.take("mcuvid").toString();
+            }
+        }
+    }
+    return retVal;
+}
+
+QString cConfigureUtils::getMCUPid()
+{
+    QString retVal = "";
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
+    qDebug() << configFolder + "/" + configureFileName;
+
+    if (cfgFile.exists()) {
+        if(cfgFile.open(QIODevice::ReadOnly)) {
+            QTextStream in(&cfgFile);
+            QString content = in.readAll();
+            cfgFile.close();
+            if (!content.isEmpty()) {
+                QJsonDocument itemDoc = QJsonDocument::fromJson(content.toLatin1());
+                QJsonObject itemObj = itemDoc.object();
+                retVal = itemObj.take("mcupid").toString();
             }
         }
     }
@@ -391,8 +493,8 @@ QString cConfigureUtils::getEthernetMac()
 QString cConfigureUtils::getPicturesDir()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -412,8 +514,8 @@ QString cConfigureUtils::getPicturesDir()
 QString cConfigureUtils::getManualMode()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -433,8 +535,8 @@ QString cConfigureUtils::getManualMode()
 QString cConfigureUtils::getPassword()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -454,8 +556,8 @@ QString cConfigureUtils::getPassword()
 QString cConfigureUtils::getLine()
 {
     QString retVal = "";
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -478,14 +580,16 @@ QString cConfigureUtils::getIpAddress()
     process.start("hostname -I");
     process.waitForFinished(-1); // will wait forever until finished
     QString stdout = process.readAllStandardOutput().trimmed();
-    return stdout;
+    QStringList listIp = stdout.split(" ");
+    QString resIp = listIp.first();
+    return resIp;
 }
 
 int cConfigureUtils::getDelayValue()
 {
     int retVal = 0;
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
@@ -505,8 +609,8 @@ int cConfigureUtils::getDelayValue()
 int cConfigureUtils::getNumOfSameScan()
 {
     int retVal = 0;
-    const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QFile cfgFile(homeFolder + "/" + configureFileName);
+   const QString configFolder = "/etc/default";
+    QFile cfgFile(configFolder + "/" + configureFileName);
 
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {

@@ -36,6 +36,7 @@ public:
     bool istableExist(QString tableName);
     QList<QPair<QString, QString>> getNewError();
     QList<cDataMH> getNewDataMH();
+    QString getMCUAction();
     void clearDataMH();
     void clearNewError();
     bool createTransactionTable();

@@ -30,6 +30,7 @@ public:
     void setMH(QString text);
     void setAB1(QString ab1);
     void setAB2(QString ab2);
+    void createMCUActionBox(int numOfBox);
     void createErrorTableContent(QList<QPair<QString, QString>> content);
     void clearErrorTableContent();
 private:

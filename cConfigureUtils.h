@@ -12,6 +12,8 @@ public:
     static void setServerAddress(QString serverAddress);
     static void setScannerVID(QString vid);
     static void setScannerPID(QString pid);
+    static void setMCUVID(QString vid);
+    static void setMCUPID(QString pid);
     static void setDelayValue(int sec);
     static void setPicturesDir(QString dir);
     static void setManaualMode(QString mode);
@@ -21,6 +23,8 @@ public:
     static QString getServerAdddress();
     static QString getScannerVid();
     static QString getScannerPid();
+    static QString getMCUVid();
+    static QString getMCUPid();
     static QString getWifiMac();
     static QString getEthernetMac();
     static QString getPicturesDir();

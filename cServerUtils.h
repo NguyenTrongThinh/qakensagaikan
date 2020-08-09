@@ -28,6 +28,7 @@ public:
     QJsonArray getMHTable();
     QStringList getListTableName(QJsonArray tableArray);
     QList<cDataMH> getListDataMH(QJsonArray dataArray);
+
     QList<QPair<QString, QString>> getListTablecontent(QJsonArray tableArray, QString tableName);
     int postDataToServer(const cDataSession &dataSession);
     int postPictureToServer(const cPicturesData &dataSession);

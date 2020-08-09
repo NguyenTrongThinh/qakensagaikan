@@ -164,6 +164,11 @@ QList<cDataMH> cSQliteDatabase::getNewDataMH()
     return m_DataMH;
 }
 
+QString cSQliteDatabase::getMCUAction()
+{
+
+}
+
 void cSQliteDatabase::clearDataMH()
 {
     m_DataMH.clear();
@@ -222,8 +227,6 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
     QString nameplateab2 = dataSession.getNamePlateAB2();
     QString prefixab2 = dataSession.getPrefixAB2();
     QString line = dataSession.getLine();
-    qDebug() << "Line==========================: " << dataSession.getLine();
-    qDebug() << "Line==========================: " << line;
     QString ca = dataSession.getca();
     QString deviceid = dataSession.getdeviceid();
     QList<QPair<QString, int>> errorList = dataSession.getloi();
@@ -503,7 +506,7 @@ bool cSQliteDatabase::createTempSessionTable()
             return retVal;
     }
     QSqlQuery query = QSqlQuery(m_Database);
-    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(12), makanban CHAR(17), tenbangloi TEXT, maab1 TEXT, maab2 TEXT, hinh TEXT)").arg(tempsession);
+    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(12), makanban CHAR(17), tenbangloi TEXT, maab1 TEXT, maab2 TEXT, mcuAction TEXT, hinh TEXT)").arg(tempsession);
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -556,13 +559,14 @@ bool cSQliteDatabase::insertTempSession(cDataSessionActivating activatingSession
                 sqliteHinhList.append(":");
             }
         }
-        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, maab1, maab2, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\")")
+        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, maab1, maab2, mcuAction, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\")")
                 .arg(tempsession)
                 .arg(activatingSession.getMNV())
                 .arg(activatingSession.getMaKanban())
                 .arg(activatingSession.getTenBangLoi())
                 .arg(activatingSession.getMaAB1())
                 .arg(activatingSession.getMaAB2())
+                .arg(activatingSession.getMCUAction())
                 .arg(sqliteHinhList);
         query.prepare(cmd);
         query.exec();
@@ -629,7 +633,8 @@ cDataSessionActivating cSQliteDatabase::getTempSession()
         retVal.setTenBangLoi(query.value(3).toString());
         retVal.setMaAB1(query.value(4).toString());
         retVal.setMaAB2(query.value(5).toString());
-        if (query.value(6).toString().isEmpty())
+        retVal.setMCUAction(query.value(6).toString());
+        if (query.value(7).toString().isEmpty())
             pictureList.clear();
         else
             pictureList = query.value(6).toString().split(":");

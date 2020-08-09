@@ -87,6 +87,11 @@ void wErrorTable::setAB2(QString ab2)
     }
 }
 
+void wErrorTable::createMCUActionBox(int numOfBox)
+{
+
+}
+
 void wErrorTable::createErrorTableContent(QList<QPair<QString, QString> > content)
 {
     int row = 0, col = 0;
@@ -119,10 +124,10 @@ void wErrorTable::createErrorTableContent(QList<QPair<QString, QString> > conten
         connect( m_TableRowWidgetList[i], SIGNAL(clicked()), m_SignalMapper, SLOT(map()) );
 
         ui->glerrorContent->addWidget(m_TableRowWidgetList.last(), row++, col);
-        if (row >= (content.count() / 2)) {
-            row = 0;
-            col += 1;
-        }
+//        if (row >= (content.count() / 2)) {
+//            row = 0;
+//            col += 1;
+//        }
     }
     connect( m_SignalMapper, SIGNAL(mapped(int)), this, SLOT(onCheckBoxChecked(qint32)));
     m_tableContent = content;
@@ -162,12 +167,10 @@ void wErrorTable::onButtonClicked(QString label)
         dataSession.setHinh(tempDataSession.getPicturesList());
         dataSession.setmnv(cStaffIDParserUtils::getMNV(m_MNV));
         dataSession.settime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-        qDebug() << "================> time: " << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
         dataSession.setMHCode(cKanbanParserUtils::getMH(m_MH));
         dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_MH));
         dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_MH));
         dataSession.setLine(cConfigureUtils::getLine());
-        qDebug() << "LineeeeeeeeeeeEEEE: " << dataSession.getLine();
 
         dataSession.setdeviceid(cConfigureUtils::getIpAddress());
         dataSession.setMaAB1(cAB1CodeParserUtils::getAB1(m_AB1));
@@ -212,7 +215,6 @@ void wErrorTable::onButtonClicked(QString label)
         }
         dataSession.setloi(loi);
         if (!inValidDataFound) {
-            qDebug() << "LineeeeeeeeeeeEEEE: " << dataSession.getLine();
             bool retVal = m_DataBase->insertHistoryTransaction(dataSession, cSQliteDatabase::UNSUBMITED);
             if (retVal)
                 m_DataBase->deleteTempSession();

@@ -2,6 +2,8 @@
 #include <QDebug>
 #include "cDataUtils.h"
 #include <QSerialPortInfo>
+#include "cConfigureUtils.h"
+#include <QString>
 
 #define TAG "cSerialPort Sender: "
 
@@ -69,8 +71,10 @@ bool cSerialPortSender::searchSerialPort(QSerialPortInfo *portInfo)
 {
     bool retVal = false;
     // VID PID se lay tu file configure, goi ham tuw cConfigureUTils
-    quint16 BOARD_PID = 0x5740;
-    quint16 BOARD_VID = 0x0483;
+    quint16 BOARD_PID = cConfigureUtils::getMCUPid().toUInt(nullptr,16);
+    quint16 BOARD_VID = cConfigureUtils::getMCUVid().toUInt(nullptr,16);
+    qDebug() << "BOARD_PID " << BOARD_PID;
+    qDebug() << "BOARD_VID " << BOARD_VID;
     const auto serialPortInfos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &serialPortInfo : serialPortInfos) {
         if(serialPortInfo.productIdentifier() == BOARD_PID && serialPortInfo.vendorIdentifier() == BOARD_VID) {
@@ -222,6 +226,7 @@ QList<cOperator> cSerialPortSender::getOperatorStatus(bool *ok)
                                 response.append(tempArray);
                                 if (cDataUtils::isCheckSumCorrect(response)) {
                                     qDebug() << TAG << "Receive Correct Data";
+                                    qDebug() << TAG << "Data " << response;
                                     retVal = cDataUtils::parseResponseFromBoard(response);
                                     *ok = true;
                                 } else {
@@ -287,6 +292,7 @@ void cSerialPortSender::main_loop()
             case GETSTATUS:
                 opraratorStatus = getOperatorStatus(&statusOk);
                 if (statusOk && opraratorStatus.count() > 0) {
+                    qDebug() << "===========================";
                     emit sigOperatorStatus(opraratorStatus);
                 }
                 break;

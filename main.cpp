@@ -4,6 +4,7 @@
 #include <QSplashScreen>
 #include <QThread>
 #include <QList>
+#include <sys/time.h>
 #include <cServerUtils.h>
 #include <cDataSession.h>
 #include <cSqliteDatabase.h>
@@ -21,6 +22,7 @@
 #include <QDebug>
 #include <QTimer>
 #include "cdatamh.h"
+#include <cOperator.h>
 
 
 void myMessageHandler(QtMsgType type,const QMessageLogContext &context,const QString &msg)
@@ -69,7 +71,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 #ifndef BUILD_PC
-    qInstallMessageHandler(myMessageHandler);
+//    qInstallMessageHandler(myMessageHandler);
 #endif
    // QPixmap pixmap(":/splash/resources/splash.png");
 //    QSplashScreen splash(pixmap);
@@ -85,6 +87,8 @@ int main(int argc, char *argv[])
 //    splash.show();
 
     qRegisterMetaType<cDataSession>("cDataSession");
+    qRegisterMetaType<cOperator>("cOperator");
+    qRegisterMetaType<QList<cOperator>>("QList<cOperator>");
     qRegisterMetaType<QList<cDataSession>>("cDataSession");
     qRegisterMetaType<cDataMH>("cDataMH");
     qRegisterMetaType<QList<cDataMH>>("cDataMH");
@@ -173,6 +177,7 @@ int main(int argc, char *argv[])
 
 //        splash.showMessage("Khởi tạo Camera", Qt::AlignHCenter | Qt::AlignTop, Qt::blue);
         a.processEvents();
+        qDebug() << "Start Camera Thread";
         //Start Camera Thread
         QThread m_CameraThread;
         cCameraWorker *m_CameraWorker = cCameraWorker::instance();
@@ -183,7 +188,7 @@ int main(int argc, char *argv[])
         m_CameraThread.start();
 
         //Start Auto Sync Thread;
-
+        qDebug() << "Start Camera Thread Complete";
 
         QThread *m_ASyncWorkerThread = new QThread();
         cAutoSync *m_ASyncWorker = new cAutoSync();
@@ -193,13 +198,20 @@ int main(int argc, char *argv[])
         QObject::connect(m_ASyncWorker, SIGNAL(sigPostPicturesToServer(QList<cPicturesData>)), m_serverutils, SLOT(postPictureToServerFromThread(QList<cPicturesData>)));
         QObject::connect(m_ASyncWorker, SIGNAL(sigPostDataToServer(QList<cDataSession>)), m_serverutils, SLOT(postDataToServerFromThread(QList<cDataSession>)));
         m_ASyncWorkerThread->start();
-
+        qDebug() << "Start Auto Sync Thread Complete";
         QTimer dateTimer;
         dateTimer.setInterval(5000);
         a.connect(&dateTimer, &QTimer::timeout, [m_serverutils] () {
             QString dateTime = m_serverutils->getDateTime();
             qDebug() << "Set Date Time every 5s: " << dateTime;
-            system(QString("timedatectl set-time '%1'").arg(dateTime).toLatin1().data());
+//            QString time_format = "yyyy-MM-dd HH:mm:ss";
+//            QDateTime datetime = QDateTime::fromString(dateTime,time_format);
+//            qulonglong time = datetime.toTime_t();
+//            struct timeval tv;
+//            tv.tv_sec = time;
+//            tv.tv_usec = 0;
+//            settimeofday(&tv, NULL);
+            system(QString("sudo timedatectl set-time '%1'").arg(dateTime).toLatin1().data());
         });
         dateTimer.start();
         a.processEvents();

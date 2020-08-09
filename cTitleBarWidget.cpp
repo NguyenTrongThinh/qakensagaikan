@@ -1,6 +1,7 @@
 #include "cTitleBarWidget.h"
 #include <QStyleOption>
 #include <QPainter>
+#include <QDebug>
 
 cTitleBarWidget::cTitleBarWidget(QWidget *parent) : QWidget(parent)
 {
@@ -25,13 +26,23 @@ cTitleBarWidget::cTitleBarWidget(QWidget *parent) : QWidget(parent)
 
     m_FreeMemWidget = new cFreeMemWidget();
 
+    m_MCUWidget = new cMCUWidget();
+
+
+    serialportSender = cSerialPortSender::instance();
+
+    QObject::connect(serialportSender, SIGNAL(sigSerialPortConnected()), this, SLOT(onSerialPortConnected())) ;
+    QObject::connect(serialportSender, SIGNAL(sigSerialPortDisconnected()), this, SLOT(onSerialPortDisconnected())) ;
+
     m_HBoxLayout->addWidget(m_TitleLabel);
     m_HBoxLayout->addStretch();
     m_HBoxLayout->addWidget(m_SyncingWidget);
     m_HBoxLayout->addWidget(m_WifiWidget);
     m_HBoxLayout->addWidget(m_FreeMemWidget);
+    m_HBoxLayout->addWidget(m_MCUWidget);
     m_HBoxLayout->addWidget(m_ClockWidget);
     m_HBoxLayout->addWidget(m_CancalButton);
+
     m_HBoxLayout->setSpacing(10);
     setStyleSheet("color: rgb(255, 255, 255); background-color: rgb(100, 101, 164); border: 4px; border-radius: 5px;");
     this->setLayout(m_HBoxLayout);
@@ -112,4 +123,16 @@ void cTitleBarWidget::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     QWidget::paintEvent(event);
+}
+
+void cTitleBarWidget::onSerialPortConnected()
+{
+    qDebug() << "cTitleBarWidget: Capture signal Serial Port Connected";
+    m_MCUWidget->setIconConnected();
+}
+
+void cTitleBarWidget::onSerialPortDisconnected()
+{
+    qDebug() << "cTitleBarWidget: Capture signal Serial Port Disconnected";
+    m_MCUWidget->setIconDisconnected();
 }

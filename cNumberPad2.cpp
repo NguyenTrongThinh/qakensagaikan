@@ -11,7 +11,7 @@ cNumberPad2::cNumberPad2(QWidget *parent) : QWidget(parent)
         m_PushButton = new QPushButton();
         m_PushButton->setMinimumHeight(50);
         m_PushButton->setText(m_ButtonLabel.at(i).toUpper());
-        m_PushButton->setStyleSheet("background-color: rgb(52, 101, 164); color: rgb(238, 238, 236); font-size: 30px; font-style: bold");
+        m_PushButton->setStyleSheet("background-color: rgb(52, 101, 164); color: rgb(238, 238, 236); font-size: 20px; font-style: bold");
         m_ListButton << m_PushButton;
         m_signalMapperKey->setMapping(m_ListButton.at(i), i);
         connect( m_ListButton.at(i), SIGNAL(clicked()), m_signalMapperKey, SLOT(map()) );
@@ -25,7 +25,7 @@ cNumberPad2::cNumberPad2(QWidget *parent) : QWidget(parent)
         else {
             if (QString::compare(m_ButtonLabel.at(i), "del") == 0)
             {
-                m_PushButton->setStyleSheet("background-color: rgb(0, 255, 255); color: rgb(238, 238, 236); font-size: 30px; font-style: bold");
+                m_PushButton->setStyleSheet("background-color: rgb(0, 255, 255); color: rgb(238, 238, 236); font-size: 25px; font-style: bold");
 
                 m_GridLayout->addWidget(m_ListButton.at(i), row, col++, 1, 2);
                 row++;

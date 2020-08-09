@@ -22,6 +22,8 @@ public:
     void setLine(QString line);
     void setDelayTiming(int sec);
     void cancelOperation();
+    void createMCUActionBox(int numBox);
+    void setOperatorStatus(int numOfOperator, bool isMCUConnect);
 private:
     Ui::wCheckingKanban *ui;
     QTimer *m_Timer = nullptr;

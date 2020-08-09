@@ -5,7 +5,7 @@ cDataSessionActivating::cDataSessionActivating()
 }
 
 cDataSessionActivating::cDataSessionActivating(const cDataSessionActivating &other)
-    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_Makanban(other.m_Makanban), m_maab1(other.m_maab1), m_maab2(other.m_maab2), m_Pictures(other.m_Pictures)
+    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_Makanban(other.m_Makanban), m_maab1(other.m_maab1), m_maab2(other.m_maab2) , m_thaotacmcu(other.m_thaotacmcu), m_Pictures(other.m_Pictures)
 {
 
 }
@@ -45,6 +45,11 @@ void cDataSessionActivating::setMaAB2(QString maab2)
     m_maab2 = maab2;
 }
 
+void cDataSessionActivating::setMCUAction(QString mcuaction)
+{
+    m_thaotacmcu = mcuaction;
+}
+
 QString cDataSessionActivating::getMNV() const
 {
     return m_Mnv;
@@ -73,4 +78,9 @@ QString cDataSessionActivating::getMaAB1() const
 QString cDataSessionActivating::getMaAB2() const
 {
     return m_maab2;
+}
+
+QString cDataSessionActivating::getMCUAction() const
+{
+    return m_thaotacmcu;
 }

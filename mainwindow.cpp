@@ -9,6 +9,7 @@
 #include "cAB2CodeParserUtils.h"
 #include "cConfigureUtils.h"
 #include "cMessageBox.h"
+#include "cOperator.h"
 
 #define SELECT_TABLE_PAGE           0
 #define SCAN_STAFF_PAGE             1
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ScanStaffID = new wScanStaffID();
 
     m_SCanKanbanCode = new wScanKanbanCode();
+
 
     m_ScanStaffID->setStaffIDLable("SCAN");
     m_SCanKanbanCode->setKanbanLable("SCAN");
@@ -88,6 +90,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_Camera = cCameraWorker::instance();
     connect(m_Camera, SIGNAL(sigSaveImageSuccess()), this, SLOT(onSaveImageSuccess()));
+
+    workerThread = new QThread();
+    serialportSender = cSerialPortSender::instance();
+    serialportSender->moveToThread(workerThread);
+    QObject::connect(workerThread, &QThread::started, serialportSender, &cSerialPortSender::main_loop);
+    QObject::connect(serialportSender, &cSerialPortSender::finished, workerThread, &QThread::quit);
+    workerThread->start();
+
+    QObject::connect(serialportSender, SIGNAL(sigSerialPortConnected()), this, SLOT(onSerialPortConnected())) ;
+    QObject::connect(serialportSender, SIGNAL(sigSerialPortDisconnected()), this, SLOT(onSerialPortDisconnected())) ;
+
+    QObject::connect(serialportSender, SIGNAL(sigOperatorStatus(const QList<cOperator> &)), this, SLOT(onOperatorStatus(const QList<cOperator> &))) ;
 }
 
 MainWindow::~MainWindow()
@@ -119,15 +133,20 @@ void MainWindow::setStackViewPage(int page)
             m_CurrentSessionData.setMaKanban(m_Kanbancode.toUpper());
             m_CurrentSessionData.setMNV(m_StaffID.toUpper());
             m_CurrentSessionData.setTenBangLoi(m_UserSelectedTableName.toUpper());
-            qDebug() << "aaaaaaaaaaaaaaaaaaaaaaaa" << m_MaAB1 << m_MaAB2;
             m_CurrentSessionData.setMaAB1(m_MaAB1.toUpper());
             m_CurrentSessionData.setMaAB2(m_MaAB2.toUpper());
+            m_CurrentSessionData.setMCUAction(m_MCUAction);
             m_Database->insertTempSession(m_CurrentSessionData);
             if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
                 m_CheckingKanban->onBtnOKClicked();
             }
         }
     }
+
+}
+
+void MainWindow::setOperator(quint8 Operator)
+{
 
 }
 
@@ -255,6 +274,7 @@ void MainWindow::onScannerReady(const QString &data)
     qDebug() << "Scanner From Main Windows : " << data;
     qDebug() << "Scanner From Main Windows : " << data.length();
     static int mySomaAB = 0;
+    static QString MCUAction = "";
     if (!m_UserSelectedTableName.isEmpty() && m_StackWidget->currentIndex() == SCAN_KANBAN_PAGE && data.length() == 23 && data.at(0).toUpper() != "A" && data.at(1).toUpper() != "B" ) {
 
         if(m_MyState == STATE_CHECKING_MH)
@@ -271,6 +291,7 @@ void MainWindow::onScannerReady(const QString &data)
                     m_CheckingKanban->setLine(cConfigureUtils::getLine());
                     m_ErrorTable->setMH(m_Kanbancode.toUpper());
                     m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
+
                     QList<cDataMH> myDataMH = m_Database->getNewDataMH();
 
                     for(int i = 0; i < myDataMH.length(); i++)
@@ -279,12 +300,24 @@ void MainWindow::onScannerReady(const QString &data)
                         {
                             qDebug() << "Detect MH Code in DB ";
                             mySomaAB = myDataMH[i].getSoMaAB();
+                            MCUAction = myDataMH[i].getThaoTacMCU();
+                            qDebug() << "Set MCU Data: " << MCUAction.toLatin1();
+                            serialportSender->setBoardData(MCUAction.toLatin1());
+                            QMap<QString, QStringList> finalMCUAct;
+                            QStringList myMCU = MCUAction.split("OP");
+                            myMCU.removeFirst();
+                            m_MCUAction = "";
+                            m_MCUAction = MCUAction;
+                            qDebug() << myMCU.count();
+
+                            int numOfBox = myMCU.count();
                             m_MaAB1 = "";
                             m_MaAB2 = "";
                             m_MaAB1 = myDataMH[i].getMaAB1().toUpper();
                             m_MaAB2 = myDataMH[i].getMaAB2().toUpper();
                             m_CheckingKanban->setMAB1(m_MaAB1);
                             m_CheckingKanban->setMAB2(m_MaAB2);
+                            m_CheckingKanban->createMCUActionBox(numOfBox);
                             m_ErrorTable->setAB1(m_MaAB1);
                             m_ErrorTable->setAB2(m_MaAB2);
                             qDebug() << "So ma AB: " << mySomaAB;
@@ -361,30 +394,6 @@ void MainWindow::onScannerReady(const QString &data)
             delete m_MessageBox;
             connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
         }
-
-
-//        if (!m_TenContinueousKanban.contains(data.toUpper())) {
-//            m_Kanbancode = data.toUpper();
-//            m_TenContinueousKanban.append(m_Kanbancode);
-//            if (m_TenContinueousKanban.count() >= 10) {
-//                m_TenContinueousKanban.removeFirst();
-//            }
-//            m_SCanKanbanCode->setKanbanLable(m_Kanbancode.toUpper());
-//            m_ErrorTable->setMH(m_Kanbancode.toUpper());
-//            m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
-//            QTimer::singleShot(200, this, SLOT(nextStackView()));
-//        } else {
-//            disconnect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
-
-//            cMessageBox *m_MessageBox = new cMessageBox();
-//            m_MessageBox->setText("Lỗi Scan Kanban");
-//            m_MessageBox->setInformativeText("10 lần scan kanban liên tiếp không được trùng nhau, vui lòng kiểm tra lại");
-//            m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
-//            m_MessageBox->setHideRejectButton();
-//            m_MessageBox->exec();
-//            delete m_MessageBox;
-//            connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
-//        }
     }
     else if(!m_UserSelectedTableName.isEmpty() && m_StackWidget->currentIndex() == SCAN_KANBAN_PAGE && data.at(0).toUpper() == "A" && data.at(1).toUpper() == "B")
     {
@@ -397,7 +406,8 @@ void MainWindow::onScannerReady(const QString &data)
                 {
                     m_SCanKanbanCode->setMaAB1(data.toUpper());
                     mySomaAB = 0;
-
+                    qDebug() << "Send data to board ";
+                    serialportSender->requestMethod(cSerialPortSender::SENDDATA);
                     m_MyState = STATE_CHECKING_MH;
                     QTimer::singleShot(200, this, SLOT(nextStackView()));
 
@@ -449,6 +459,8 @@ void MainWindow::onScannerReady(const QString &data)
             {
                 m_SCanKanbanCode->setMaAB2(data.toUpper());
                 mySomaAB = 0;
+                qDebug() << "Send data to board ";
+                serialportSender->requestMethod(cSerialPortSender::SENDDATA);
                 if(m_ContinueMH.length() == (cConfigureUtils::getNumOfSameScan() - 1))
                 {
                     m_ContinueMH.clear();
@@ -508,6 +520,7 @@ void MainWindow::onScannerReady(const QString &data)
             m_Kanbancode = m_CurrentSessionData.getMaKanban();
             m_MaAB1 = m_CurrentSessionData.getMaAB1();
             m_MaAB2 = m_CurrentSessionData.getMaAB2();
+            QString myMCUAction = m_CurrentSessionData.getMCUAction();
             m_ErrorTable->setMH(m_Kanbancode.toUpper());
             m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
             m_CheckingKanban->setMAB1(m_MaAB1.toUpper());
@@ -525,6 +538,17 @@ void MainWindow::onScannerReady(const QString &data)
             connect(m_ScannerUtils, SIGNAL(onDataDetected(QString)), this, SLOT(onScannerReady(QString)));
             if (retVal == QDialog::Accepted) {
                 m_ContinueMH.append(m_Kanbancode);
+
+                qDebug() << "Set MCU Data: " << myMCUAction.toLatin1();
+                serialportSender->setBoardData(myMCUAction.toLatin1());
+                QMap<QString, QStringList> finalMCUAct;
+                QStringList myMCU = myMCUAction.split("OP");
+                myMCU.removeFirst();
+                qDebug() << myMCU.count();
+
+                int numOfBox = myMCU.count();
+                m_CheckingKanban->createMCUActionBox(numOfBox);
+                serialportSender->requestMethod(cSerialPortSender::SENDDATA);
                 setStackViewPage(m_StackWidget->currentIndex() + 2);
 
             } else {
@@ -645,8 +669,42 @@ void MainWindow::onFramedataReady(QPixmap pixmap)
 void MainWindow::onSelectLineClicked()
 {
     m_SelectLineDialog = new wSelectLine();
-    m_SelectLineDialog->setFixedSize(800,480);
+//    m_SelectLineDialog->setFixedSize(800,600);
+
 
     m_SelectLineDialog->exec();
     delete m_SelectLineDialog;
+}
+
+void MainWindow::onSerialPortConnected()
+{
+    qDebug() << "Main: Capture signal Serial Port Connected";
+    m_isMCUConnected = true;
+    if(m_StackWidget->currentIndex() == CHECKING_KANBAN_PAGE)
+    {
+        serialportSender->requestMethod(cSerialPortSender::SENDDATA);
+    }
+}
+
+void MainWindow::onSerialPortDisconnected()
+{
+    qDebug() << "Main: Capture signal Serial Port Disonnected";
+    m_isMCUConnected = false;
+}
+
+void MainWindow::onOperatorStatus(const QList<cOperator> &status)
+{
+    qDebug() << "Oprator Status: ";
+    foreach (cOperator op, status) {
+        qDebug() << "Oprator: " << op.getOperator(); //0 - 7
+        qDebug() << "status: " << op.getStatusCode(); // 1 succcessful 0 failed
+        qDebug() << "Num OP: " << op.getNumOP(); // operators
+        if(op.getStatusCode() == 1)
+        {
+            if(m_StackWidget->currentIndex() == CHECKING_KANBAN_PAGE)
+            {
+                m_CheckingKanban->setOperatorStatus(op.getOperator(), m_isMCUConnected);
+            }
+        }
+    }
 }

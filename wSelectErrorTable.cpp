@@ -1,6 +1,8 @@
 #include "wSelectErrorTable.h"
 #include "ui_wSelectErrorTable.h"
 #include <QDebug>
+#include "cConfigureUtils.h"
+#include "cMessageBox.h"
 
 wSelectErrorTable::wSelectErrorTable(QWidget *parent) :
     QWidget(parent),
@@ -44,8 +46,22 @@ QString wSelectErrorTable::getSelectedTableName()
 
 void wSelectErrorTable::onButtonClick(qint32 index)
 {
-    m_SelectedTableName = m_ErrorTableList.at(index);
-    emit sigErrorTableSetected(m_SelectedTableName);
+    if(cConfigureUtils::getLine() != "")
+    {
+        m_SelectedTableName = m_ErrorTableList.at(index);
+        emit sigErrorTableSetected(m_SelectedTableName);
+    }
+    else
+    {
+        cMessageBox *m_MessageBox = new cMessageBox();
+        m_MessageBox->setText("Chưa chọn line");
+        m_MessageBox->setInformativeText("Chưa chọn line, vui lòng kiểm tra lại");
+        m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+        m_MessageBox->setHideRejectButton();
+        m_MessageBox->exec();
+        delete m_MessageBox;
+    }
+
 }
 
 void wSelectErrorTable::on_pbLine_clicked()

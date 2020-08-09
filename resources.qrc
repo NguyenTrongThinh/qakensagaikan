@@ -32,5 +32,7 @@
         <file>resources/trash_clicked.png</file>
         <file>resources/trash.png</file>
         <file>resources/qrcode.png</file>
+        <file>resources/disconnect-usb.png</file>
+        <file>resources/pendrive.png</file>
     </qresource>
 </RCC>

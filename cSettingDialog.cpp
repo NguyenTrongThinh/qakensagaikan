@@ -15,6 +15,7 @@ cSettingDialog::cSettingDialog(QWidget *parent) :
     ui->ckhManual->setText("Chế độ thủ công");
     ui->ckhManual->setStyleSheet("QCheckBox::indicator { width: 40px; height: 40px;};");
     m_NumberPad = new cNumberPad2();
+    m_lineedit = ui->leditTimeDelay;
     connect(m_NumberPad, SIGNAL(buttonClicked(QString)), this, SLOT(onKeypadClicked(QString)));
     connect(ui->leditTimeDelay, SIGNAL(sigMousePressEvent()), this, SLOT(focusTimeEdit()));
     connect(ui->leNumOfSameScan, SIGNAL(sigMousePressEvent()), this, SLOT(focusNUmOfSameEdit()));
@@ -114,7 +115,7 @@ void cSettingDialog::on_btnOK_clicked()
     else
     {
         cMessageBox *m_MessageBox = new cMessageBox();
-        m_MessageBox->setText("Thời gian delay không hợp lệ");
+        m_MessageBox->setText("Thm_lineeditời gian delay không hợp lệ");
         m_MessageBox->setInformativeText("Vui lòng kiểm tra lại");
         m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
         m_MessageBox->setHideRejectButton();

@@ -48,6 +48,7 @@ SOURCES += \
         cDataSession.cpp \
     cDataUtils.cpp \
         cKanbanParserUtils.cpp \
+    cMCUWidget.cpp \
         cNumberPad.cpp \
     cOperator.cpp \
         cRowErrorWidget.cpp \
@@ -99,6 +100,7 @@ HEADERS += \
         cDataSession.h \
     cDataUtils.h \
         cKanbanParserUtils.h \
+    cMCUWidget.h \
         cNumberPad.h \
     cOperator.h \
         cRowErrorWidget.h \

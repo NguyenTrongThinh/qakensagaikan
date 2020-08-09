@@ -2,6 +2,8 @@
 #include "ui_wCheckingKanban.h"
 #include "cConfigureUtils.h"
 #include <QDebug>
+#include <QLabel>
+
 wCheckingKanban::wCheckingKanban(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::wCheckingKanban)
@@ -62,6 +64,50 @@ void wCheckingKanban::cancelOperation()
     qDebug() << "Cancel Operation by User";
 }
 
+void wCheckingKanban::createMCUActionBox(int numBox)
+{
+    int row = 0, col = 0;
+    QLayoutItem *child;
+    qDebug() << "Start Delete child count" << ui->gridLayout_6->count();
+    while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
+        qDebug() << "Delete child";
+        delete child->widget();
+        delete child;
+    }
+    if(numBox > 0)
+    {
+        for(int i = 0; i < numBox; i++)
+        {
+            QLabel *Label = new QLabel();
+            Label->setStyleSheet("font-size: 15pt;");
+            Label->setAlignment(Qt::AlignCenter);
+            Label->setStyleSheet("QLabel{ width:50px; height: 40px; border-color: rgb(46, 52, 54);border: 1px solid black;}");
+            Label->setText("OP" + QString::number(i + 1));
+            ui->gridLayout_6->addWidget(Label, row, col++);
+        }
+    }
+
+}
+
+void wCheckingKanban::setOperatorStatus(int numOfOperator, bool isMCUConnect)
+{
+    if((ui->gridLayout_6->count() >= (numOfOperator + 1)) && (ui->gridLayout_6->count() > 0))
+    {
+        QLabel *myLabel = qobject_cast<QLabel*>(ui->gridLayout_6->itemAt(numOfOperator)->widget());
+        myLabel->setStyleSheet("QLabel{ width:50px; height: 40px; border-color: rgb(46, 52, 54);background-color: rgb(138, 226, 52);border: 1px solid black;}");
+    }
+    if(ui->gridLayout_6->count() == (numOfOperator + 1))
+    {
+        if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
+            if ((m_Timer != nullptr) && (m_Timer->isActive() == false))
+            {
+                m_Delay = cConfigureUtils::getDelayValue();
+                m_Timer->start();
+            }
+        }
+    }
+}
+
 void wCheckingKanban::onTimerTimeout()
 {
     if (m_Delay > 0) {
@@ -71,6 +117,12 @@ void wCheckingKanban::onTimerTimeout()
     } else {
         m_Timer->stop();
         //ui->btnOK->setText("OK");
+        QLayoutItem *child;
+        qDebug() << "Start Delete child count" << ui->gridLayout_6->count();
+        while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
+            delete child->widget();
+            delete child;
+        }
         emit sigOKCkicked();
     }
 }
@@ -78,13 +130,17 @@ void wCheckingKanban::onTimerTimeout()
 void wCheckingKanban::onBtnOKClicked()
 {
     if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
-        if (m_Timer != nullptr)
-        {
-            m_Delay = cConfigureUtils::getDelayValue();
-            //ui->btnOK->setText(QString::number(m_Delay).toUpper());
-            m_Timer->start();
-        }
+//        if (m_Timer != nullptr)
+//        {
+//            m_Delay = cConfigureUtils::getDelayValue();
+//            m_Timer->start();
+//        }
     } else {
+        QLayoutItem *child;
+        while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
+            delete child->widget();
+            delete child;
+        }
         emit sigOKCkicked();
     }
 }

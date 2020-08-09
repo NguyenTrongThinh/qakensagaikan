@@ -10,7 +10,8 @@
 #include <cWifiWidget.h>
 #include <cSyncingWidget.h>
 #include "cFreeMemWidget.h"
-
+#include <cMCUWidget.h>
+#include "cSerialPortSender.h"
 
 class cTitleBarWidget : public QWidget
 {
@@ -32,9 +33,11 @@ private:
     QLabel *m_TitleLabel = nullptr;
     cCancelButton *m_CancalButton = nullptr;
     cWifiWidget *m_WifiWidget = nullptr;
+    cMCUWidget *m_MCUWidget = nullptr;
     cClockWidget *m_ClockWidget = nullptr;
     cSyncingWidget *m_SyncingWidget = nullptr;
     cFreeMemWidget *m_FreeMemWidget = nullptr;
+    cSerialPortSender *serialportSender = nullptr;
 signals:
     void sigCancelButtonClicked();
     void sigClockWidgetClicked();
@@ -43,6 +46,8 @@ signals:
     void sigWifiConnected();
 
 private slots:
+    void onSerialPortConnected();
+    void onSerialPortDisconnected();
 };
 
 #endif // CTITLEBARWIDGET_H

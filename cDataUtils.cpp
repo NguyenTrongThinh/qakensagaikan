@@ -1,5 +1,6 @@
 #include "cDataUtils.h"
 #include <QDateTime>
+#include <QDebug>
 
 #define STATUSCODE_INDEX_HIGH           0x03
 #define STATUSCODE_INDEX_LOW            0x04
