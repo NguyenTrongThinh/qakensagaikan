@@ -347,7 +347,6 @@ QString cConfigureUtils::getServerAdddress()
     QString retVal = "";
     const QString homeFolder = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QFile cfgFile(homeFolder + "/" + configureFileName);
-    qDebug() << "Home Folder: " << configFolder;
     if (cfgFile.exists()) {
         if(cfgFile.open(QIODevice::ReadOnly)) {
             QTextStream in(&cfgFile);
