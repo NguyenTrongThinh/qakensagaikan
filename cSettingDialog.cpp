@@ -89,7 +89,20 @@ void cSettingDialog::on_btnOK_clicked()
     if (ui->ckhManual->isChecked()) {
         cConfigureUtils::setManaualMode("1");
     } else {
-        cConfigureUtils::setManaualMode("0");
+        if (isConverOK && delay >= 0) {
+            cConfigureUtils::setManaualMode("0");
+            cConfigureUtils::setDelayValue(delay);
+        }
+        else
+        {
+            cMessageBox *m_MessageBox = new cMessageBox();
+            m_MessageBox->setText("Thm_lineeditời gian delay không hợp lệ");
+            m_MessageBox->setInformativeText("Vui lòng kiểm tra lại");
+            m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
+            m_MessageBox->setHideRejectButton();
+            m_MessageBox->exec();
+            delete m_MessageBox;
+        }
     }
     bool isConvertOK = false;
     QString sNumSameScan = ui->leNumOfSameScan->text();
@@ -109,19 +122,7 @@ void cSettingDialog::on_btnOK_clicked()
         delete m_MessageBox;
 
     }
-    if (isConverOK && delay >= 0) {
-        cConfigureUtils::setDelayValue(delay);
-    }
-    else
-    {
-        cMessageBox *m_MessageBox = new cMessageBox();
-        m_MessageBox->setText("Thm_lineeditời gian delay không hợp lệ");
-        m_MessageBox->setInformativeText("Vui lòng kiểm tra lại");
-        m_MessageBox->setIcon(QPixmap(":/images/resources/critical_80x80.png"));
-        m_MessageBox->setHideRejectButton();
-        m_MessageBox->exec();
-        delete m_MessageBox;
-    }
+
     this->close();
 }
 

@@ -506,7 +506,7 @@ bool cSQliteDatabase::createTempSessionTable()
             return retVal;
     }
     QSqlQuery query = QSqlQuery(m_Database);
-    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv CHAR(12), makanban CHAR(17), tenbangloi TEXT, maab1 TEXT, maab2 TEXT, mcuAction TEXT, hinh TEXT)").arg(tempsession);
+    QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, mnv TEXT, makanban TEXT, tenbangloi TEXT, maab1 TEXT, maab2 TEXT, mcuAction TEXT, hinh TEXT)").arg(tempsession);
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -550,25 +550,39 @@ bool cSQliteDatabase::insertTempSession(cDataSessionActivating activatingSession
     }
     retVal = deleteTempSession();
     if (retVal) {
-        QSqlQuery query = QSqlQuery(m_Database);
         QStringList hinhName = activatingSession.getPicturesList();
         QString sqliteHinhList;
+        qDebug() << "cSQliteDatabase::insertTempSession: hinhName count: " << hinhName.count();
         for (int i = 0; i < hinhName.count(); i++) {
+            qDebug() << "cSQliteDatabase::insertTempSession: hinhName: " << hinhName.at(i);
             sqliteHinhList.append(hinhName.at(i));
             if (i < (hinhName.count() - 1)) {
                 sqliteHinhList.append(":");
             }
         }
-        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, maab1, maab2, mcuAction, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\")")
-                .arg(tempsession)
-                .arg(activatingSession.getMNV())
-                .arg(activatingSession.getMaKanban())
-                .arg(activatingSession.getTenBangLoi())
-                .arg(activatingSession.getMaAB1())
-                .arg(activatingSession.getMaAB2())
-                .arg(activatingSession.getMCUAction())
-                .arg(sqliteHinhList);
+        qDebug() << "cSQliteDatabase::insertTempSession: sqliteHinhList: " << sqliteHinhList;
+//        QString cmd = QString("INSERT INTO \"%1\" (mnv, makanban, tenbangloi, maab1, maab2, mcuAction, hinh) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\")")
+//                .arg(tempsession)
+//                .arg(activatingSession.getMNV())
+//                .arg(activatingSession.getMaKanban())
+//                .arg(activatingSession.getTenBangLoi())
+//                .arg(activatingSession.getMaAB1())
+//                .arg(activatingSession.getMaAB2())
+//                .arg(activatingSession.getMCUAction())
+//                .arg(sqliteHinhList);
+        QString cmd = QString("INSERT INTO tempsession (mnv, makanban, tenbangloi, maab1, maab2, mcuAction, hinh) \
+                 VALUES (:mnv, :makanban, :tenbangloi, :maab1, :maab2, :mcuAction, :hinh)");
+        QSqlQuery query = QSqlQuery(m_Database);
         query.prepare(cmd);
+        query.bindValue(":mnv", activatingSession.getMNV());
+        query.bindValue(":makanban", activatingSession.getMaKanban());
+        query.bindValue(":tenbangloi", activatingSession.getTenBangLoi());
+        query.bindValue(":maab1", activatingSession.getMaAB1());
+        query.bindValue(":maab2", activatingSession.getMaAB2());
+        query.bindValue(":mcuAction", activatingSession.getMCUAction());
+        query.bindValue(":hinh", sqliteHinhList);
+        qDebug() << "Command: " << cmd;
+
         query.exec();
         retVal = m_Database.transaction();
         if (retVal)
@@ -583,8 +597,13 @@ bool cSQliteDatabase::appendTempPictureName(QStringList name)
     bool retVal = false;
     cDataSessionActivating cTempDataSession = getTempSession();
     QStringList pictureList = cTempDataSession.getPicturesList();
+
     pictureList.append(name);
     cTempDataSession.setPicturesList(pictureList);
+    for(int i = 0; i < pictureList.count(); i++)
+    {
+        qDebug() << "cSQliteDatabase::appendTempPictureName-pictureList: "<< pictureList.at(i);
+    }
     retVal = insertTempSession(cTempDataSession);
     return retVal;
 }
@@ -635,9 +654,13 @@ cDataSessionActivating cSQliteDatabase::getTempSession()
         retVal.setMaAB2(query.value(5).toString());
         retVal.setMCUAction(query.value(6).toString());
         if (query.value(7).toString().isEmpty())
+        {
             pictureList.clear();
+        }
         else
-            pictureList = query.value(6).toString().split(":");
+        {
+            pictureList = query.value(7).toString().split(":");
+        }
         retVal.setPicturesList(pictureList);
         break;
     }

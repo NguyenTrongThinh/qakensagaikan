@@ -74,13 +74,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>155</width>
+           <width>165</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="font">
           <font>
-           <pointsize>15</pointsize>
+           <pointsize>13</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -134,7 +134,7 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>20</pointsize>
+           <pointsize>18</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -178,13 +178,13 @@ border-radius: 15px
          </property>
          <property name="maximumSize">
           <size>
-           <width>155</width>
+           <width>165</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="font">
           <font>
-           <pointsize>15</pointsize>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -235,7 +235,7 @@ border-radius: 15px
          </property>
          <property name="font">
           <font>
-           <pointsize>20</pointsize>
+           <pointsize>18</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -278,13 +278,13 @@ border-radius: 15px</string>
          </property>
          <property name="maximumSize">
           <size>
-           <width>155</width>
+           <width>165</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="font">
           <font>
-           <pointsize>15</pointsize>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -326,7 +326,7 @@ border-radius: 15px</string>
         <widget class="QLabel" name="lbCodeAB2">
          <property name="font">
           <font>
-           <pointsize>20</pointsize>
+           <pointsize>18</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>

@@ -214,7 +214,11 @@ void MainWindow::onCheckingKanbanOKClicked()
     qDebug() << "AB2 Name Plate: " << cAB2CodeParserUtils::getAB2NamePlate(m_MaAB2);
     qDebug() << "AB2: " << cAB2CodeParserUtils::getAB2(m_MaAB2);
     qDebug() << "AB2 Prefix: " << cAB2CodeParserUtils::getAB2Prefix(m_MaAB2);
-
+    qDebug() << "HINH count: " << tempDataSession.getPicturesList().count();
+    for(int i = 0; i < tempDataSession.getPicturesList().count(); i++)
+    {
+        qDebug() << "HINH: " << tempDataSession.getPicturesList().at(i);
+    }
 
     QList<QPair<QString, int>> loi;
     dataSession.setloi(loi);
@@ -308,8 +312,6 @@ void MainWindow::onScannerReady(const QString &data)
                             myMCU.removeFirst();
                             m_MCUAction = "";
                             m_MCUAction = MCUAction;
-                            qDebug() << myMCU.count();
-
                             int numOfBox = myMCU.count();
                             m_MaAB1 = "";
                             m_MaAB2 = "";
@@ -694,11 +696,10 @@ void MainWindow::onSerialPortDisconnected()
 
 void MainWindow::onOperatorStatus(const QList<cOperator> &status)
 {
-    qDebug() << "Oprator Status: ";
     foreach (cOperator op, status) {
-        qDebug() << "Oprator: " << op.getOperator(); //0 - 7
-        qDebug() << "status: " << op.getStatusCode(); // 1 succcessful 0 failed
-        qDebug() << "Num OP: " << op.getNumOP(); // operators
+//        qDebug() << "Oprator: " << op.getOperator(); //0 - 7
+//        qDebug() << "status: " << op.getStatusCode(); // 1 succcessful 0 failed
+//        qDebug() << "Num OP: " << op.getNumOP(); // operators
         if(op.getStatusCode() == 1)
         {
             if(m_StackWidget->currentIndex() == CHECKING_KANBAN_PAGE)

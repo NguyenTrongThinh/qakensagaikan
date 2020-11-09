@@ -228,7 +228,6 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     sessionData.insert("manhanvien", dataSession.getmnv());
     sessionData.insert("thoigiantest",dataSession.gettime());
     sessionData.insert("line", dataSession.getLine().toUInt());
-    qDebug() << "Line: " << dataSession.getLine();
     qDebug() << "Line: " << dataSession.getLine().toUInt();
     sessionData.insert("mahang", dataSession.getMHCode());
     sessionData.insert("deviceid", dataSession.getdeviceid());
@@ -284,8 +283,10 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     QVariantList hinhList;
     QVariantMap hinh;
     hinhList.clear();
+    qDebug() << "LIST HINH COUNT: " << dataSession.getHinh().count();
     for (int j = 0; j < dataSession.getHinh().count(); j++)
     {
+        qDebug() << "HINH NAME: " << dataSession.getHinh().at(j);
         hinh.insert("name", dataSession.getHinh().at(j));
         hinhList.append(hinh);
     }

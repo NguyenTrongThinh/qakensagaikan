@@ -292,7 +292,6 @@ void cSerialPortSender::main_loop()
             case GETSTATUS:
                 opraratorStatus = getOperatorStatus(&statusOk);
                 if (statusOk && opraratorStatus.count() > 0) {
-                    qDebug() << "===========================";
                     emit sigOperatorStatus(opraratorStatus);
                 }
                 break;

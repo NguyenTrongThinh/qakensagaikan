@@ -136,6 +136,7 @@ void cCameraWorker::mainLoop()
                 m_PictureData.setSaveDate(QDateTime::currentDateTime());
                 m_Database->insertPicturesTransaction(m_PictureData, cSQliteDatabase::UNSUBMITED);
                 QFileInfo file(m_lastFileName);
+                qDebug() << "cCameraWorker -File name - LUUANH: " << file.fileName();
                 m_Database->appendTempPictureName(QStringList(file.fileName()));
                 emit sigSaveImageSuccess();
                 m_Method = SLEEP;

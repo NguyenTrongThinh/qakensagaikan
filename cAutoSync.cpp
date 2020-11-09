@@ -29,7 +29,7 @@ QString cAutoSync::getBSSID()
     m_Process.waitForFinished(2000); // sets current thread to sleep and waits for pingProcess end
     QString output(m_Process.readAllStandardOutput());
     if (!output.contains("ESSID")) {
-//        output = "không có wifi";
+        output = "không có wifi";
     }
     return output;
 }
