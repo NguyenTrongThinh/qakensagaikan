@@ -407,7 +407,7 @@ bool cSQliteDatabase::deleteOldSubmitedTransaction()
         QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "ddMMyyhhmmss");
         rowDatabaseTime.setDate(QDate(rowDatabaseTime.date().year() + 100, rowDatabaseTime.date().month(), rowDatabaseTime.date().day()));
         qDebug() << "Date To " << rowDatabaseTime.daysTo(currentDateTime);
-        if (rowDatabaseTime.daysTo(currentDateTime) >= 90) {
+        if (rowDatabaseTime.daysTo(currentDateTime) >= 30) {
             deleteDateTime.append(sDateTime);
         }
     }
@@ -764,7 +764,7 @@ bool cSQliteDatabase::deleteOldSubmitedPicturesTransaction()
         QString sDateTime = query.value(2).toString();
         QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd hh:mm:ss");
         //qDebug() << "Date To " << rowDatabaseTime.daysTo(currentDateTime);
-        if (rowDatabaseTime.daysTo(currentDateTime) >= 90) {
+        if (rowDatabaseTime.daysTo(currentDateTime) >= 30) {
             deleteDateTime.append(sDateTime);
         }
     }

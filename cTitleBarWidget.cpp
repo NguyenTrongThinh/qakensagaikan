@@ -67,7 +67,7 @@ cTitleBarWidget::~cTitleBarWidget()
 void cTitleBarWidget::setTitle(QString title)
 {
     if (m_TitleLabel != nullptr) {
-        QFont ubuntuFont("Ubuntu", 24, QFont::Bold);
+        QFont ubuntuFont("Ubuntu", 20, QFont::Bold);
         m_TitleLabel->setFont(ubuntuFont);
         m_TitleLabel->setText(title);
     }
