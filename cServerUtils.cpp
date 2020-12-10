@@ -78,14 +78,14 @@ QJsonArray cServerUtils::getErrorTable()
     if(timer.isActive()) {
         timer.stop();
         if(reply->error() > 0) {
-          qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
+          qDebug() << "cServerUtils::getErrorTable-Error: " << reply->error() << "text: " << reply->errorString();
         }
         else {
           int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-          qDebug() << "Http Status Code: " << v;
+          qDebug() << "cServerUtils::getErrorTable-Http Status Code: " << v;
           if (v >= 200 && v < 300) {
             QByteArray readData = reply->readAll();
-            qDebug() << "Error Table: " << readData;
+            qDebug() << "cServerUtils::getErrorTable-Error Table: " << readData;
             QJsonDocument itemDoc = QJsonDocument::fromJson(readData);
             if (itemDoc.isArray()) {
                 QJsonArray rootArray = itemDoc.array();
@@ -115,7 +115,7 @@ QJsonArray cServerUtils::getMHTable()
     for (const QHostAddress &address: QNetworkInterface::allAddresses()) {
         if (address.protocol() == QAbstractSocket::IPv4Protocol && address != localhost)
         {
-            qDebug() << address.toString();
+            qDebug() << "cServerUtils::getMHTable-" << address.toString();
             header  = address.toString();
         }
 
@@ -131,14 +131,14 @@ QJsonArray cServerUtils::getMHTable()
     if(timer.isActive()) {
         timer.stop();
         if(reply->error() > 0) {
-          qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
+          qDebug() << "cServerUtils::getMHTable-Error: " << reply->error() << "text: " << reply->errorString();
         }
         else {
           int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-          qDebug() << "Http Status Code: " << v;
+          qDebug() << "cServerUtils::getMHTable-Http Status Code: " << v;
           if (v >= 200 && v < 300) {
             QByteArray readData = reply->readAll();
-            qDebug() << "MH Table: " << readData;
+            qDebug() << "cServerUtils::getMHTable-MH Table: " << readData;
             QJsonDocument itemDoc = QJsonDocument::fromJson(readData);
             if (itemDoc.isArray()) {
                 QJsonArray rootArray = itemDoc.array();
@@ -179,11 +179,11 @@ QList<cDataMH> cServerUtils::getListDataMH(QJsonArray dataArray)
        QVariantMap mahang = value.toObject().toVariantMap();
        dataMH.setMaHang(mahang.value("mahang").toString());
        dataMH.setSoMaAB(mahang.value("somaab").toInt());
-       qDebug() << "List ma AB" << mahang.value("maab").toJsonArray();
+       qDebug() << "cServerUtils::getListDataMH-List ma AB" << mahang.value("maab").toJsonArray();
        dataMH.setMaAB1(mahang.value("maab").toJsonArray().at(0).toString());
        dataMH.setMaAB2(mahang.value("maab").toJsonArray().at(1).toString());
-       qDebug() << "Ma AB 1" << mahang.value("maab").toJsonArray().at(0).toString();
-       qDebug() << "Ma AB 2" << mahang.value("maab").toJsonArray().at(1).toString();
+       qDebug() << "cServerUtils::getListDataMH-Ma AB 1" << mahang.value("maab").toJsonArray().at(0).toString();
+       qDebug() << "cServerUtils::getListDataMH-Ma AB 2" << mahang.value("maab").toJsonArray().at(1).toString();
        dataMH.setThaoTacMCU(mahang.value("thaotacmcu").toString());
        dataMH.setChamMagic(mahang.value("chammagic").toString());
        dataMH.setDongMoc(mahang.value("dongmoc").toString());
@@ -228,7 +228,7 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     sessionData.insert("manhanvien", dataSession.getmnv());
     sessionData.insert("thoigiantest",dataSession.gettime());
     sessionData.insert("line", dataSession.getLine().toUInt());
-    qDebug() << "Line: " << dataSession.getLine().toUInt();
+    qDebug() << "cServerUtils::postDataToServer-Line: " << dataSession.getLine().toUInt();
     sessionData.insert("mahang", dataSession.getMHCode());
     sessionData.insert("deviceid", dataSession.getdeviceid());
     sessionData.insert("ngayin", dataSession.getMHDatePrint());
@@ -283,10 +283,10 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     QVariantList hinhList;
     QVariantMap hinh;
     hinhList.clear();
-    qDebug() << "LIST HINH COUNT: " << dataSession.getHinh().count();
+    qDebug() << "cServerUtils::postDataToServer-LIST HINH COUNT: " << dataSession.getHinh().count();
     for (int j = 0; j < dataSession.getHinh().count(); j++)
     {
-        qDebug() << "HINH NAME: " << dataSession.getHinh().at(j);
+        qDebug() << "cServerUtils::postDataToServer-HINH NAME: " << dataSession.getHinh().at(j);
         hinh.insert("name", dataSession.getHinh().at(j));
         hinhList.append(hinh);
     }
@@ -306,7 +306,7 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
 
     QNetworkReply *reply = m_NetworkAccessManager->post(request, itemdoc.toJson());
 
-    qDebug() << "Http Request: " << itemdoc;
+    qDebug() << "cServerUtils::postDataToServer-Http Request: " << itemdoc;
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     timer.start(10000);
@@ -314,15 +314,15 @@ int cServerUtils::postDataToServer(const cDataSession &dataSession)
     if(timer.isActive()) {
         timer.stop();
         if(reply->error() > 0) {
-          qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
+          qDebug() << "cServerUtils::postDataToServer-Error: " << reply->error() << "text: " << reply->errorString();
         }
         else {
           int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-          qDebug() << "Http Status Code: " << v;
+          qDebug() << "cServerUtils::postDataToServer-Http Status Code: " << v;
           retVal = v;
           if (v >= 200 && v < 300) {
             QByteArray readData = reply->readAll();
-            qDebug() << "Http Status code: " << readData;
+            qDebug() << "cServerUtils::postDataToServer-Http Status code: " << readData;
           }
         }
     } else {
@@ -340,13 +340,13 @@ int cServerUtils::postPictureToServer(const cPicturesData &dataSession)
     CURLcode res;                                         /* curl result code */
     QString filePath = dataSession.getLocationOnDisk();
 
-    qDebug() << "File Path: " << filePath;
+    qDebug() << "cServerUtils::postPictureToServer-File Path: " << filePath;
     /* init curl handle */
     curl_global_init(CURL_GLOBAL_DEFAULT);
     if ((curl = curl_easy_init()) == nullptr)
     {
         /* log error */
-        qDebug() << "postPictureToServer: ERROR: Failed to create curl handle in fetch_session";
+        qDebug() << "cServerUtils::postPictureToServer-postPictureToServer: ERROR: Failed to create curl handle in fetch_session";
     }
     else
     {
@@ -357,7 +357,7 @@ int cServerUtils::postPictureToServer(const cPicturesData &dataSession)
         QByteArray brUrl = QString(QUrl(m_ServerAddress + "/dulieuhinh").toString().toLatin1().data()).toLocal8Bit();
         char *url = brUrl.data();
 
-        qDebug() << "postPictureToServer:brUrl: " + brUrl;
+        qDebug() << "cServerUtils::postPictureToServer-postPictureToServer:brUrl: " + brUrl;
 
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -418,14 +418,14 @@ QString cServerUtils::getDateTime()
     if(timer.isActive()) {
         timer.stop();
         if(reply->error() > 0) {
-          qDebug() << "Error: " << reply->error() << "text: " << reply->errorString();
+          qDebug() << "cServerUtils::getDateTime-Error: " << reply->error() << "text: " << reply->errorString();
         }
         else {
           int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-          qDebug() << "Http Status Code: " << v;
+          qDebug() << "cServerUtils::getDateTime-Http Status Code: " << v;
           if (v >= 200 && v < 300) {
             QByteArray readData = reply->readAll();
-            qDebug() << "DateTime From Server: " << readData;
+            qDebug() << "cServerUtils::getDateTime-DateTime From Server: " << readData;
             retVal = QString::fromLatin1(readData);
           }
         }
@@ -461,10 +461,10 @@ void cServerUtils::postDataToServerFromThread(const QList<cDataSession> &dataSes
 {
     m_SyncDataDone = false;
     for(int i = 0; i < dataSession.count(); i++) {
-        qDebug() << "cServerUtils: " << QDateTime::currentDateTime().toString() << " : Start post Data To Server: " << dataSession.at(i).gettime();
+        qDebug() << "cServerUtils::postDataToServerFromThread-cServerUtils: " << QDateTime::currentDateTime().toString() << " : Start post Data To Server: " << dataSession.at(i).gettime();
         int retVal = postDataToServer(dataSession.at(i));
         if (retVal >= 200 && retVal < 300) {
-            qDebug() << "cServerUtils: " << QDateTime::currentDateTime().toString() << " : Post to server Success" << dataSession.at(i).gettime();
+            qDebug() << "cServerUtils::postDataToServerFromThread-cServerUtils: " << QDateTime::currentDateTime().toString() << " : Post to server Success" << dataSession.at(i).gettime();
             m_Database->updateUnsubmitedTransaction(cSQliteDatabase::SUBMITED, dataSession.at(i).gettime());
         }
     }
@@ -475,10 +475,10 @@ void cServerUtils::postPictureToServerFromThread(const QList<cPicturesData> &dat
 {
     m_SyncPicturesDone = false;
     for(int i = 0; i < dataSession.count(); i++) {
-        qDebug() << "cServerUtils: " << QDateTime::currentDateTime().toString() << " : Start Post Picture to server: " << dataSession.at(i).getSaveDate();
+        qDebug() << "cServerUtils::postPictureToServerFromThread-cServerUtils: " << QDateTime::currentDateTime().toString() << " : Start Post Picture to server: " << dataSession.at(i).getSaveDate();
         int retVal = postPictureToServer(dataSession.at(i));
         if (retVal >= 200 && retVal < 300) {
-            qDebug() << "cServerUtils: " << QDateTime::currentDateTime().toString() << " : Post To server Success: " << dataSession.at(i).getSaveDate();
+            qDebug() << "cServerUtils::postPictureToServerFromThread-cServerUtils: " << QDateTime::currentDateTime().toString() << " : Post To server Success: " << dataSession.at(i).getSaveDate();
             m_Database->updateSubmitedPicturesTransaction(dataSession.at(i), cSQliteDatabase::SUBMITED);
         }
     }

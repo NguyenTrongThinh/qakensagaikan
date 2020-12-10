@@ -73,7 +73,7 @@ bool cSQliteDatabase::createErrorTable(QString tableName)
     }
     QSqlQuery query = QSqlQuery(m_Database);
     QString cmd = QString("CREATE TABLE IF NOT EXISTS \"%1\"(id INTEGER PRIMARY KEY AUTOINCREMENT, errorcode CHAR(5), errorstring TEXT)").arg(tableName);
-    qDebug() << cmd;
+    qDebug() << "cSQliteDatabase::createErrorTable-" << cmd;
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -270,7 +270,7 @@ bool cSQliteDatabase::insertHistoryTransaction(cDataSession dataSession, int sub
     query.bindValue(":ca", ca);
     query.bindValue(":hinh", hinh);
     query.bindValue(":submit", submited);
-    qDebug() << "Command: " << cmd;
+    qDebug() << "cSQliteDatabase::insertHistoryTransaction-Command: " << cmd;
 
     query.exec();
     retVal = m_Database.transaction();
@@ -406,7 +406,7 @@ bool cSQliteDatabase::deleteOldSubmitedTransaction()
         QString sDateTime = query.value(2).toString();
         QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "ddMMyyhhmmss");
         rowDatabaseTime.setDate(QDate(rowDatabaseTime.date().year() + 100, rowDatabaseTime.date().month(), rowDatabaseTime.date().day()));
-        qDebug() << "Date To " << rowDatabaseTime.daysTo(currentDateTime);
+        qDebug() << "cSQliteDatabase::deleteOldSubmitedTransaction-Date To " << rowDatabaseTime.daysTo(currentDateTime);
         if (rowDatabaseTime.daysTo(currentDateTime) >= 30) {
             deleteDateTime.append(sDateTime);
         }
@@ -420,7 +420,7 @@ bool cSQliteDatabase::deleteOldSubmitedTransaction()
             query.bindValue(":time", deleteRow);
             query.exec();
         }
-        qDebug() << "Del Command: " << delcmd;
+        qDebug() << "cSQliteDatabase::deleteOldSubmitedTransaction-Del Command: " << delcmd;
     }
     retVal = m_Database.commit();
     query.clear();
@@ -581,7 +581,7 @@ bool cSQliteDatabase::insertTempSession(cDataSessionActivating activatingSession
         query.bindValue(":maab2", activatingSession.getMaAB2());
         query.bindValue(":mcuAction", activatingSession.getMCUAction());
         query.bindValue(":hinh", sqliteHinhList);
-        qDebug() << "Command: " << cmd;
+        qDebug() << "cSQliteDatabase::insertTempSession-Command: " << cmd;
 
         query.exec();
         retVal = m_Database.transaction();
@@ -777,7 +777,7 @@ bool cSQliteDatabase::deleteOldSubmitedPicturesTransaction()
             query.bindValue(":date", deleteRow);
             query.exec();
         }
-        qDebug() << "DEl Picture command: " << delcmd;
+        qDebug() << "cSQliteDatabase::deleteOldSubmitedPicturesTransaction-DEl Picture command: " << delcmd;
     }
     retVal = m_Database.commit();
     query.clear();
@@ -833,7 +833,7 @@ QList<cPicturesData> cSQliteDatabase::getOldSubmitedPicturesTransaction()
     while(query.next()) {
         QString sDateTime = query.value(2).toString();
         QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd hh:mm:ss");
-        qDebug() << "Date To " << rowDatabaseTime.daysTo(currentDateTime);
+        qDebug() << "cSQliteDatabase::getOldSubmitedPicturesTransaction-Date To " << rowDatabaseTime.daysTo(currentDateTime);
         if (rowDatabaseTime.daysTo(currentDateTime) >= 180) {
             cPicturesData onePictireData;
             onePictireData.setLocationOnDisk(query.value(1).toString());
@@ -876,7 +876,7 @@ bool cSQliteDatabase::insertIntoMHTable(QString tableNam, cDataMH mhdata)
     }
     QSqlQuery query = QSqlQuery(m_Database);
     QString cmd = QString("INSERT INTO \"%1\" (mahang, somaab, maab1, maab2, thaotacmcu, chammagic, dongmoc) VALUES (\"%2\", \"%3\", \"%4\", \"%5\", \"%6\", \"%7\", \"%8\")").arg(tableNam).arg(mhdata.getMaHang()).arg(mhdata.getSoMaAB()).arg(mhdata.getMaAB1()).arg(mhdata.getMaAB2()).arg(mhdata.getThaoTacMCU()).arg(mhdata.getChamMagic()).arg(mhdata.getDongMoc());
-    qDebug() << cmd;
+    qDebug() << "cSQliteDatabase::insertIntoMHTable-" << cmd;
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();

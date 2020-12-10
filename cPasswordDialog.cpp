@@ -49,11 +49,11 @@ void cPasswordDialog::setLineEditText(const QString &text)
         if (QString::compare(text, "") == 0) {
             ui->lnPassword->clear();
         } else {
-        qDebug() << "Invalid input number";
+        qDebug() << "cPasswordDialog::setLineEditText-Invalid input number";
         }
 
     } else {
-        qDebug() << "Append input number: " << number;
+        qDebug() << "cPasswordDialog::setLineEditText-Append input number: " << number;
         if (QString::compare(ui->lnPassword->text(), "0") == 0)
         {
             ui->lnPassword->clear();

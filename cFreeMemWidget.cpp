@@ -73,11 +73,11 @@ void cFreeMemWidget::onTimerTimeout()
         }
         qDebug() << storage.rootPath();
         if (storage.isReadOnly())
-            qDebug() << "isReadOnly:" << storage.isReadOnly();
+            qDebug() << "cFreeMemWidget::onTimerTimeout-isReadOnly:" << storage.isReadOnly();
 
-        qDebug() << "name:" << storage.name();
-        qDebug() << "fileSystemType:" << storage.fileSystemType();
-        qDebug() << "size:" << storage.bytesTotal()/1000/1000 << "MB";
-        qDebug() << "availableSize:" << storage.bytesAvailable()/1000/1000 << "MB";
+        qDebug() << "cFreeMemWidget::onTimerTimeout-name:" << storage.name();
+        qDebug() << "cFreeMemWidget::onTimerTimeout-fileSystemType:" << storage.fileSystemType();
+        qDebug() << "cFreeMemWidget::onTimerTimeout-size:" << storage.bytesTotal()/1000/1000 << "MB";
+        qDebug() << "cFreeMemWidget::onTimerTimeout-availableSize:" << storage.bytesAvailable()/1000/1000 << "MB";
     }
 }

@@ -63,7 +63,7 @@ Mat cCameraWorker::captureImageFromCamera()
     Mat frames;
     if (!m_Cap.isOpened()) {
        bool retVal = m_Cap.open(0);
-       qDebug() << "Camera is opened with RetVal: " << retVal;
+       qDebug() << "cCameraWorker::captureImageFromCamera-Camera is opened with RetVal: " << retVal;
        if (retVal) {
            m_Cap.set(CV_CAP_PROP_FRAME_WIDTH,1280);
            m_Cap.set(CV_CAP_PROP_FRAME_HEIGHT,720);
@@ -94,7 +94,7 @@ bool cCameraWorker::saveImage(QString kanbanCode, Mat frame)
         else
             m_lastFileName = "";
     }
-    qDebug() << m_lastFileName;
+    qDebug() << "cCameraWorker::saveImage-" << m_lastFileName;
     return retVal;
 }
 
@@ -136,7 +136,7 @@ void cCameraWorker::mainLoop()
                 m_PictureData.setSaveDate(QDateTime::currentDateTime());
                 m_Database->insertPicturesTransaction(m_PictureData, cSQliteDatabase::UNSUBMITED);
                 QFileInfo file(m_lastFileName);
-                qDebug() << "cCameraWorker -File name - LUUANH: " << file.fileName();
+                qDebug() << "cCameraWorker-File name - LUUANH: " << file.fileName();
                 m_Database->appendTempPictureName(QStringList(file.fileName()));
                 emit sigSaveImageSuccess();
                 m_Method = SLEEP;

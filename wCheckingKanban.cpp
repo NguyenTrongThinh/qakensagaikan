@@ -61,16 +61,16 @@ void wCheckingKanban::cancelOperation()
     if (m_Timer != nullptr) {
         m_Timer->stop();
     }
-    qDebug() << "Cancel Operation by User";
+    qDebug() << "wCheckingKanban::cancelOperation-Cancel Operation by User";
 }
 
 void wCheckingKanban::createMCUActionBox(int numBox)
 {
     int row = 0, col = 0;
     QLayoutItem *child;
-    qDebug() << "Start Delete child count" << ui->gridLayout_6->count();
+    qDebug() << "wCheckingKanban::createMCUActionBox-Start Delete child count" << ui->gridLayout_6->count();
     while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
-        qDebug() << "Delete child";
+        qDebug() << "wCheckingKanban::createMCUActionBox-Delete child";
         delete child->widget();
         delete child;
     }

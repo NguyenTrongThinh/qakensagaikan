@@ -16,7 +16,7 @@ cConfirmNoButton::~cConfirmNoButton()
 
 void cConfirmNoButton::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "USer clicked here";
+    qDebug() << "cConfirmNoButton::mouseReleaseEvent-USer clicked here";
     QPixmap mypix (":/images/resources/unchecked_60x60.png");
     setPixmap(mypix);
     emit sigMouseReleaseEvent();

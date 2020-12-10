@@ -44,11 +44,11 @@ void cSettingDialog::setLineEditText(const QString &text)
         if (QString::compare(text, "") == 0) {
             m_lineedit->clear();
         } else {
-        qDebug() << "Invalid input number";
+        qDebug() << "cSettingDialog::setLineEditText-Invalid input number";
         }
 
     } else {
-        qDebug() << "Append input number: " << number;
+        qDebug() << "cSettingDialog::setLineEditText-Append input number: " << number;
     }
 
     if (QString::compare(m_lineedit->text(), "0") == 0)

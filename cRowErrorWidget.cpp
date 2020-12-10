@@ -43,11 +43,11 @@ void cRowErrorWidget::setLineEditText(const QString &text)
             if (m_LineEdit != nullptr)
                 m_LineEdit->clear();
         } else {
-        qDebug() << "Invalid input number";
+        qDebug() << "cRowErrorWidget::setLineEditText-Invalid input number";
         }
 
     } else {
-        qDebug() << "Append input number: " << number;
+        qDebug() << "cRowErrorWidget::setLineEditText-Append input number: " << number;
     }
     if (m_LineEdit != nullptr) {
         if (QString::compare(m_LineEdit->text(), "0") == 0)
@@ -156,7 +156,7 @@ void cRowErrorWidget::onCheckBoxStateChanged(int status)
             emit clicked();
             break;
         case Qt::PartiallyChecked:
-            qDebug() << "Future used";
+            qDebug() << "cRowErrorWidget::onCheckBoxStateChanged-Future used";
             break;
         default:
         break;

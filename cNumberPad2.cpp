@@ -55,6 +55,6 @@ cNumberPad2::~cNumberPad2()
 
 void cNumberPad2::onButtonClicked(qint32 index)
 {
-    qDebug() << "Button Clicked at: " << index;
+    qDebug() << "cNumberPad2::onButtonClicked-Button Clicked at: " << index;
     emit buttonClicked(m_ButtonLabel.at(index));
 }

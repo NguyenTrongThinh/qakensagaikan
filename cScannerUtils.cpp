@@ -79,16 +79,16 @@ void cScannerUtils::mainLoop()
     }
 
     if (startDetectScanner(scanner_name) == 0) {
-        qDebug() << "Scanner Name: " << scanner_name;
+        qDebug() << "cScannerUtils::mainLoop-Scanner Name: " << scanner_name;
     } else {
-        qDebug() << "Error While Detecting Scanner";
+        qDebug() << "cScannerUtils::mainLoop-Error While Detecting Scanner";
     }
 
     releaseScannerDetectorHelper();
 
     if ((fd = openScannerDevice(scanner_name)) < 0)
     {
-      qDebug()<< "Error While Opeing Scanner";
+      qDebug()<< "cScannerUtils::mainLoop-Error While Opeing Scanner";
       return;
     }
 
@@ -110,20 +110,20 @@ void cScannerUtils::mainLoop()
                     return;
             }
             if (startDetectScanner(scanner_name) == 0) {
-                qDebug() << "Scanner Name: " << scanner_name;
+                qDebug() << "cScannerUtils::mainLoop-Scanner Name: " << scanner_name;
             } else {
-                qDebug() << "Error While Detecting Scanner";
+                qDebug() << "cScannerUtils::mainLoop-Error While Detecting Scanner";
             }
 
             releaseScannerDetectorHelper();
             if ((fd = openScannerDevice(scanner_name)) < 0)
               {
-                  qDebug()<< "Error While Opeing Scanner";
+                  qDebug()<< "cScannerUtils::mainLoop-Error While Opeing Scanner";
                   return;
               }
 
         } else  {
-            qDebug() << "SCANNER RETURN: " << scanner_in;
+            qDebug() << "cScannerUtils::mainLoop-SCANNER RETURN: " << scanner_in;
             emit onDataDetected(QString(scanner_in));
         }
     }

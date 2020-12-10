@@ -102,13 +102,13 @@ void wErrorTable::createErrorTableContent(QList<QPair<QString, QString> > conten
 //    }
     checkboxh = checkboxw = 40;
 
-    qDebug() << "CheckBox Size: " << checkboxh << " " << checkboxw;
+    qDebug() << "wErrorTable::createErrorTableContent-CheckBox Size: " << checkboxh << " " << checkboxw;
 
 //    int fontSize = 12 - (content.count() - 10);
 //    QFont ubuntuFont("Ubuntu", (fontSize > 5)?fontSize:5, QFont::Bold);
     int fontSize = 20;
     QFont ubuntuFont("Ubuntu", fontSize, QFont::Bold);
-    qDebug() << "Text Font Size: " << ubuntuFont.pointSize();
+    qDebug() << "wErrorTable::createErrorTableContent-Text Font Size: " << ubuntuFont.pointSize();
 
     m_SignalMapper = new QSignalMapper();
 
@@ -150,8 +150,8 @@ void wErrorTable::clearErrorTableContent()
 void wErrorTable::onCheckBoxChecked(qint32 index)
 {
     m_CurrentcheckBox = index;
-    qDebug() << "CheckBox checked at: " << m_CurrentcheckBox;
-    qDebug() << "Ma Loi: " << m_tableContent.at(index).first << " Ten Loi: " <<  m_tableContent.at(index).second;
+    qDebug() << "wErrorTable::onCheckBoxChecked-CheckBox checked at: " << m_CurrentcheckBox;
+    qDebug() << "wErrorTable::onCheckBoxChecked-Ma Loi: " << m_tableContent.at(index).first << " Ten Loi: " <<  m_tableContent.at(index).second;
 }
 
 void wErrorTable::onButtonClicked(QString label)
@@ -183,17 +183,17 @@ void wErrorTable::onButtonClicked(QString label)
         dataSession.setNamePlateAB2(cAB2CodeParserUtils::getAB2NamePlate(m_AB2));
         dataSession.setca(cStaffIDParserUtils::getCa(m_MNV));
 
-        qDebug() << "Ip Address: " << cConfigureUtils::getIpAddress();
-        qDebug() << "MH Date Print: " << cKanbanParserUtils::getDatePrint(m_MH);
-        qDebug() << "MH Name Plate: " << cKanbanParserUtils::getMHNamePlate(m_MH);
-        qDebug() << "AB1 Date Print: " << cAB1CodeParserUtils::getAB1DatePrint(m_AB1);
-        qDebug() << "AB1 Name Plate: " << cAB1CodeParserUtils::getAB1NamePlate(m_AB1);
-        qDebug() << "AB1 Prefix: " << cAB1CodeParserUtils::getAB1Prefix(m_AB1);
-        qDebug() << "AB1: " << cAB1CodeParserUtils::getAB1(m_AB1);
-        qDebug() << "AB2 Date Print: " << cAB2CodeParserUtils::getAB2DatePrint(m_AB2);
-        qDebug() << "AB2 Name Plate: " << cAB2CodeParserUtils::getAB2NamePlate(m_AB2);
-        qDebug() << "AB2: " << cAB2CodeParserUtils::getAB2(m_AB2);
-        qDebug() << "AB2 Prefix: " << cAB2CodeParserUtils::getAB2Prefix(m_AB2);
+        qDebug() << "wErrorTable::onButtonClicked-Ip Address: " << cConfigureUtils::getIpAddress();
+        qDebug() << "wErrorTable::onButtonClicked-MH Date Print: " << cKanbanParserUtils::getDatePrint(m_MH);
+        qDebug() << "wErrorTable::onButtonClicked-MH Name Plate: " << cKanbanParserUtils::getMHNamePlate(m_MH);
+        qDebug() << "wErrorTable::onButtonClicked-AB1 Date Print: " << cAB1CodeParserUtils::getAB1DatePrint(m_AB1);
+        qDebug() << "wErrorTable::onButtonClicked-AB1 Name Plate: " << cAB1CodeParserUtils::getAB1NamePlate(m_AB1);
+        qDebug() << "wErrorTable::onButtonClicked-AB1 Prefix: " << cAB1CodeParserUtils::getAB1Prefix(m_AB1);
+        qDebug() << "wErrorTable::onButtonClicked-AB1: " << cAB1CodeParserUtils::getAB1(m_AB1);
+        qDebug() << "wErrorTable::onButtonClicked-AB2 Date Print: " << cAB2CodeParserUtils::getAB2DatePrint(m_AB2);
+        qDebug() << "wErrorTable::onButtonClicked-AB2 Name Plate: " << cAB2CodeParserUtils::getAB2NamePlate(m_AB2);
+        qDebug() << "wErrorTable::onButtonClicked-AB2: " << cAB2CodeParserUtils::getAB2(m_AB2);
+        qDebug() << "wErrorTable::onButtonClicked-AB2 Prefix: " << cAB2CodeParserUtils::getAB2Prefix(m_AB2);
         QList<QPair<QString, int>> loi;
         for (int i = 0; i < m_TableRowWidgetList.count(); i++) {
             if (m_TableRowWidgetList.at(i)->isCheckBoxChecked()) {

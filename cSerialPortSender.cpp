@@ -73,8 +73,8 @@ bool cSerialPortSender::searchSerialPort(QSerialPortInfo *portInfo)
     // VID PID se lay tu file configure, goi ham tuw cConfigureUTils
     quint16 BOARD_PID = cConfigureUtils::getMCUPid().toUInt(nullptr,16);
     quint16 BOARD_VID = cConfigureUtils::getMCUVid().toUInt(nullptr,16);
-    qDebug() << "BOARD_PID " << BOARD_PID;
-    qDebug() << "BOARD_VID " << BOARD_VID;
+    qDebug() << "cSerialPortSender::searchSerialPort-BOARD_PID " << BOARD_PID;
+    qDebug() << "cSerialPortSender::searchSerialPort-BOARD_VID " << BOARD_VID;
     const auto serialPortInfos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &serialPortInfo : serialPortInfos) {
         if(serialPortInfo.productIdentifier() == BOARD_PID && serialPortInfo.vendorIdentifier() == BOARD_VID) {
@@ -134,9 +134,9 @@ bool cSerialPortSender::initSerialPort(QSerialPortInfo portInfo)
     m_SerialPort->setDataBits(QSerialPort::Data8);
     bool retVal = m_SerialPort->open(QIODevice::ReadWrite);
     if (retVal) {
-        qDebug() << "Open Serial Port " << portInfo.portName();
+        qDebug() << "cSerialPortSender::initSerialPort-Open Serial Port " << portInfo.portName();
     } else {
-        qDebug() << "Failed to open Serial Port " << portInfo.portName();
+        qDebug() << "cSerialPortSender::initSerialPort-Failed to open Serial Port " << portInfo.portName();
     }
     return retVal;
 }
@@ -150,7 +150,7 @@ bool cSerialPortSender::sendDataToBoard(QByteArray data)
     if(m_SerialPort != nullptr && m_SerialPort->isOpen()) {
         QByteArray cmdACK = cDataUtils::commandACK();
         QByteArray command = cDataUtils::commandSendDataToBoard(data);
-        qDebug() << "Command: " << data;
+        qDebug() << "cSerialPortSender::sendDataToBoard-Command: " << data;
         do {
             tempArray.clear();
             response.clear();

@@ -37,11 +37,11 @@ void wSelectLine::setLineEditText(const QString &text)
         if (QString::compare(text, "") == 0) {
             ui->leLine->clear();
         } else {
-        qDebug() << "Invalid input number";
+        qDebug() << "wSelectLine::setLineEditText-Invalid input number";
         }
 
     } else {
-        qDebug() << "Append input number: " << number;
+        qDebug() << "wSelectLine::setLineEditText-Append input number: " << number;
     }
 
     if (QString::compare(ui->leLine->text(), "0") == 0)

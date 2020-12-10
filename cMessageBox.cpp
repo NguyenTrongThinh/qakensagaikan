@@ -44,10 +44,10 @@ void cMessageBox::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::WindowStateChange) {
             if (isMinimized()){
-                qDebug() << "it was minimised";
+                qDebug() << "cMessageBox::changeEvent-it was minimised";
         }
         else{
-                qDebug() << "it's normal or maximised";
+                qDebug() << "cMessageBox::changeEvent-it's normal or maximised";
         }
     }
     QDialog::changeEvent(event);
