@@ -298,7 +298,7 @@ void MainWindow::onScannerReady(const QString &data)
 
                 for(int i = 0; i < myDataMH.length(); i++)
                 {
-                    if((myDataMH[i].getMaHang() == m_Kanbancode.toUpper()) || (myDataMH[i].getMaHang().left(10) == m_Kanbancode.toUpper().left(10)))
+                    if((myDataMH[i].getMaHang().toUpper() == m_Kanbancode.toUpper()) || (myDataMH[i].getMaHang().toUpper().left(10) == m_Kanbancode.toUpper().left(10)))
                     {
                         qDebug() << "MainWindow::onScannerReady-Detect MH Code in DB";
                         mySomaAB = myDataMH[i].getSoMaAB();
@@ -383,7 +383,7 @@ void MainWindow::onScannerReady(const QString &data)
         if(m_MyState == STATE_CHECKING_AB1)
         {
 
-            if(m_MaAB1 == data.toUpper())
+            if(m_MaAB1.toUpper() == data.toUpper() || m_MaAB1.toUpper().left(10) == data.toUpper().left(10))
             {
                 if(mySomaAB == 1)
                 {
@@ -438,7 +438,7 @@ void MainWindow::onScannerReady(const QString &data)
         }
         else if(m_MyState == STATE_CHECKING_AB2)
         {
-            if(m_MaAB2 == data.toUpper())
+            if(m_MaAB2.toUpper() == data.toUpper() || m_MaAB2.toUpper().left(10) == data.toUpper().left(10))
             {
                 m_SCanKanbanCode->setMaAB2(data.toUpper());
                 mySomaAB = 0;
