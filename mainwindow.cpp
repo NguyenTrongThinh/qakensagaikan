@@ -314,12 +314,9 @@ void MainWindow::onScannerReady(const QString &data)
                         m_MaAB1 = "";
                         m_MaAB2 = "";
                         m_MaAB1 = myDataMH[i].getMaAB1().toUpper();
-                        m_MaAB2 = myDataMH[i].getMaAB2().toUpper();
-                        m_CheckingKanban->setMAB1(m_MaAB1);
-                        m_CheckingKanban->setMAB2(m_MaAB2);
+                        m_MaAB2 = myDataMH[i].getMaAB2().toUpper();        
                         m_CheckingKanban->createMCUActionBox(numOfBox);
-                        m_ErrorTable->setAB1(m_MaAB1);
-                        m_ErrorTable->setAB2(m_MaAB2);
+
                         qDebug() << "MainWindow::onScannerReady-So ma AB: " << mySomaAB;
                         qDebug() << "MainWindow::onScannerReady-Ma AB 1: " << m_MaAB1;
                         qDebug() << "MainWindow::onScannerReady-Ma AB 2:" << m_MaAB2;
@@ -385,6 +382,9 @@ void MainWindow::onScannerReady(const QString &data)
 
             if(m_MaAB1.toUpper() == data.toUpper() || m_MaAB1.toUpper().left(10) == data.toUpper().left(10))
             {
+                m_MaAB1 = data.toUpper();
+                m_CheckingKanban->setMAB1(data.toUpper());
+                m_ErrorTable->setAB1(data.toUpper());
                 if(mySomaAB == 1)
                 {
                     m_SCanKanbanCode->setMaAB1(data.toUpper());
@@ -413,10 +413,7 @@ void MainWindow::onScannerReady(const QString &data)
                     m_MyState = STATE_CHECKING_AB2;
                     m_SCanKanbanCode->setMaAB2("SCAN");
                 }
-                else
-                {
 
-                }
 
             }
             else
@@ -440,6 +437,9 @@ void MainWindow::onScannerReady(const QString &data)
         {
             if(m_MaAB2.toUpper() == data.toUpper() || m_MaAB2.toUpper().left(10) == data.toUpper().left(10))
             {
+                m_MaAB2 = data.toUpper();
+                m_CheckingKanban->setMAB2(data.toUpper());
+                m_ErrorTable->setAB2(data.toUpper());
                 m_SCanKanbanCode->setMaAB2(data.toUpper());
                 mySomaAB = 0;
                 qDebug() << "MainWindow::onScannerReady-Send data to board ";
