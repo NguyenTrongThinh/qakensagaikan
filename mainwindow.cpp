@@ -587,6 +587,8 @@ void MainWindow::onErrorSessionFinished()
     m_SCanKanbanCode->setKanbanLable("SCAN");
     m_SCanKanbanCode->setMaAB1("");
     m_SCanKanbanCode->setMaAB2("");
+    m_ErrorTable->setAB1("");
+    m_ErrorTable->setAB2("");
     m_Kanbancode = "";
     setStackViewPage(SCAN_KANBAN_PAGE);
 }
