@@ -15,7 +15,7 @@ cSerialPortSender::cSerialPortSender(QObject *parent) : QObject(parent)
     m_Abort = false;
     m_IsSerialPortFound = false;
     m_IsSerialPortConnected = false;
-    m_Method = GETSTATUS;
+    m_Method = DONOTHING;
 }
 
 cSerialPortSender::~cSerialPortSender()
@@ -61,6 +61,18 @@ void cSerialPortSender::setBoardData(QByteArray data)
     m_DataToBoard = data;
 }
 
+void cSerialPortSender::setMagicData(QByteArray magicData)
+{
+    QMutexLocker locker(&m_Mutex);
+    m_MagicData = magicData;
+}
+
+void cSerialPortSender::setCarpentryData(QByteArray carpentryData)
+{
+    QMutexLocker locker(&m_Mutex);
+    m_CarpentryData = carpentryData;
+}
+
 void cSerialPortSender::deinitSerialPort()
 {
     if (m_SerialPort != nullptr)
@@ -71,6 +83,8 @@ bool cSerialPortSender::searchSerialPort(QSerialPortInfo *portInfo)
 {
     bool retVal = false;
     // VID PID se lay tu file configure, goi ham tuw cConfigureUTils
+    //quint16 BOARD_PID = 0x5740;
+    //quint16 BOARD_VID = 0x0483;
     quint16 BOARD_PID = cConfigureUtils::getMCUPid().toUInt(nullptr,16);
     quint16 BOARD_VID = cConfigureUtils::getMCUVid().toUInt(nullptr,16);
     qDebug() << "cSerialPortSender::searchSerialPort-BOARD_PID " << BOARD_PID;
@@ -141,6 +155,7 @@ bool cSerialPortSender::initSerialPort(QSerialPortInfo portInfo)
     return retVal;
 }
 
+//Send Thao tac MCU
 bool cSerialPortSender::sendDataToBoard(QByteArray data)
 {
     bool retVal = false;
@@ -197,6 +212,119 @@ bool cSerialPortSender::sendDataToBoard(QByteArray data)
     return retVal;
 }
 
+bool cSerialPortSender::sendMagicDataToBoard(QByteArray magicData)
+{
+    bool retVal = false;
+    quint8 retry = 3;
+    QByteArray tempArray, response;
+    bool isReadDataOK;
+    if(m_SerialPort != nullptr && m_SerialPort->isOpen()) {
+        QByteArray cmdACK = cDataUtils::commandACK();
+        QByteArray command = cDataUtils::commandSendMagicDataToBoard(magicData);
+        qDebug() << "cSerialPortSender::sendMagicDataToBoard-Command: " << magicData;
+        do {
+            tempArray.clear();
+            response.clear();
+            writeData(command);
+            if (m_SerialPort->waitForReadyRead(3000)) {
+                tempArray = readData(&isReadDataOK, 2000, 1);
+                if (isReadDataOK) {
+                    response.append(tempArray);
+                    if (response.at(0) == cmdACK.at(0)) {
+                        tempArray = readData(&isReadDataOK, 2000, 2);
+                        if (isReadDataOK) {
+                            response.append(tempArray);
+                            int length = response.at(1);
+                            length = length << 8 | response.at(2);
+                            tempArray = readData(&isReadDataOK, 5000, length + 1);
+                            if (isReadDataOK) {
+                                response.append(tempArray);
+                                if (cDataUtils::isCheckSumCorrect(response)) {
+                                    qDebug() << TAG << "Receive ACK";
+                                    int ack = response.at(3);
+                                    if (ack == cDataUtils::ACK) {
+                                        retVal = true;
+                                        retry = 0;
+                                    }
+                                } else {
+                                    qDebug() << "Get One Data Package: Incorrect Checksum";
+                                }
+                            } else {
+                                qDebug() << TAG << "Read Byte Failed, expected Length: " << length;
+                            }
+                        } else {
+                            qDebug() << TAG << "Read 2 Byte Length Failed";
+                        }
+                    } else {
+                        qDebug() << TAG << "Start Byte Not Match: " <<  response;
+                    }
+                } else {
+                    qDebug() << TAG << "Read Start Byte Failed";
+                }
+            }
+        } while (retry-- > 0);
+    }
+
+    return retVal;
+}
+
+bool cSerialPortSender::sendCarpentryDataToBoard(QByteArray carpentryData)
+{
+    bool retVal = false;
+    quint8 retry = 3;
+    QByteArray tempArray, response;
+    bool isReadDataOK;
+    if(m_SerialPort != nullptr && m_SerialPort->isOpen()) {
+        QByteArray cmdACK = cDataUtils::commandACK();
+        QByteArray command = cDataUtils::commandSendCarpentryDataToBoard(carpentryData);
+        qDebug() << "cSerialPortSender::sendMagicDataToBoard-Command: " << carpentryData;
+        do {
+            tempArray.clear();
+            response.clear();
+            writeData(command);
+            if (m_SerialPort->waitForReadyRead(3000)) {
+                tempArray = readData(&isReadDataOK, 2000, 1);
+                if (isReadDataOK) {
+                    response.append(tempArray);
+                    if (response.at(0) == cmdACK.at(0)) {
+                        tempArray = readData(&isReadDataOK, 2000, 2);
+                        if (isReadDataOK) {
+                            response.append(tempArray);
+                            int length = response.at(1);
+                            length = length << 8 | response.at(2);
+                            tempArray = readData(&isReadDataOK, 5000, length + 1);
+                            if (isReadDataOK) {
+                                response.append(tempArray);
+                                if (cDataUtils::isCheckSumCorrect(response)) {
+                                    qDebug() << TAG << "Receive ACK";
+                                    int ack = response.at(3);
+                                    if (ack == cDataUtils::ACK) {
+                                        retVal = true;
+                                        retry = 0;
+                                    }
+                                } else {
+                                    qDebug() << "Get One Data Package: Incorrect Checksum";
+                                }
+                            } else {
+                                qDebug() << TAG << "Read Byte Failed, expected Length: " << length;
+                            }
+                        } else {
+                            qDebug() << TAG << "Read 2 Byte Length Failed";
+                        }
+                    } else {
+                        qDebug() << TAG << "Start Byte Not Match: " <<  response;
+                    }
+                } else {
+                    qDebug() << TAG << "Read Start Byte Failed";
+                }
+            }
+        } while (retry-- > 0);
+    }
+
+    return retVal;
+}
+
+//Get status Operator
 QList<cOperator> cSerialPortSender::getOperatorStatus(bool *ok)
 {
     QList<cOperator> retVal;
@@ -251,11 +379,120 @@ QList<cOperator> cSerialPortSender::getOperatorStatus(bool *ok)
     return retVal;
 }
 
+bool cSerialPortSender::getMagicStatus(bool *ok)
+{
+    bool retVal = false;
+    quint8 retry = 3;
+    *ok = false;
+    QByteArray tempArray, response;
+    bool isReadDataOK;
+    if(m_SerialPort != nullptr && m_SerialPort->isOpen()) {
+        QByteArray cmdACK = cDataUtils::commandACK();
+        QByteArray cmdgetMagicStatus = cDataUtils::commandGetMagicStatus();
+        do {
+            tempArray.clear();
+            response.clear();
+            writeData(cmdgetMagicStatus);
+            if (m_SerialPort->waitForReadyRead(3000)) {
+                tempArray = readData(&isReadDataOK, 2000, 1);
+                if (isReadDataOK) {
+                    response.append(tempArray);
+                    if (static_cast<quint8>(response.at(0)) == static_cast<quint8>(cDataUtils::CMDSTATUS::MAGIC)) {
+                        tempArray = readData(&isReadDataOK, 2000, 2);
+                        if (isReadDataOK) {
+                            response.append(tempArray);
+                            int length = response.at(1);
+                            length = length << 8 | response.at(2);
+                            tempArray = readData(&isReadDataOK, 5000, length + 1);
+                            if (isReadDataOK) {
+                                response.append(tempArray);
+                                if (cDataUtils::isCheckSumCorrect(response)) {
+                                    qDebug() << TAG << "Receive Correct Data";
+                                    qDebug() << TAG << "Data " << response;
+                                    retVal = cDataUtils::parseMagicDataFromBoard(response);
+                                    *ok = true;
+                                } else {
+                                    qDebug() << "Get One Data Package: Incorrect Checksum";
+                                }
+                            } else {
+                                qDebug() << TAG << "Read Byte Failed, expected Length: " << length;
+                            }
+                        } else {
+                            qDebug() << TAG << "Read 2 Byte Length Failed";
+                        }
+                    } else {
+                        qDebug() << TAG << "Start Byte Not Match: " <<  response;
+                    }
+                } else {
+                    qDebug() << TAG << "Read Start Byte Failed";
+                }
+            }
+        } while (retry-- > 0);
+
+    }
+    return retVal;
+}
+
+bool cSerialPortSender::getCarpentryStatus(bool *ok)
+{
+    bool retVal = false;
+    quint8 retry = 3;
+    *ok = false;
+    QByteArray tempArray, response;
+    bool isReadDataOK;
+    if(m_SerialPort != nullptr && m_SerialPort->isOpen()) {
+        QByteArray cmdACK = cDataUtils::commandACK();
+        QByteArray cmdgetMagicStatus = cDataUtils::commandGetCarpentryStatus();
+        do {
+            tempArray.clear();
+            response.clear();
+            writeData(cmdgetMagicStatus);
+            if (m_SerialPort->waitForReadyRead(3000)) {
+                tempArray = readData(&isReadDataOK, 2000, 1);
+                if (isReadDataOK) {
+                    response.append(tempArray);
+                    if (static_cast<quint8>(response.at(0)) == static_cast<quint8>(cDataUtils::CMDSTATUS::CARPENTRY)) {
+                        tempArray = readData(&isReadDataOK, 2000, 2);
+                        if (isReadDataOK) {
+                            response.append(tempArray);
+                            int length = response.at(1);
+                            length = length << 8 | response.at(2);
+                            tempArray = readData(&isReadDataOK, 5000, length + 1);
+                            if (isReadDataOK) {
+                                response.append(tempArray);
+                                if (cDataUtils::isCheckSumCorrect(response)) {
+                                    qDebug() << TAG << "Receive Correct Data";
+                                    qDebug() << TAG << "Data " << response;
+                                    retVal = cDataUtils::parseCarpentryDataFromBoard(response);
+                                    *ok = true;
+                                } else {
+                                    qDebug() << "Get One Data Package: Incorrect Checksum";
+                                }
+                            } else {
+                                qDebug() << TAG << "Read Byte Failed, expected Length: " << length;
+                            }
+                        } else {
+                            qDebug() << TAG << "Read 2 Byte Length Failed";
+                        }
+                    } else {
+                        qDebug() << TAG << "Start Byte Not Match: " <<  response;
+                    }
+                } else {
+                    qDebug() << TAG << "Read Start Byte Failed";
+                }
+            }
+        } while (retry-- > 0);
+
+    }
+    return retVal;
+}
+
 void cSerialPortSender::main_loop()
 {
-    QByteArray boardData;
     QSerialPortInfo portInfo;
     QList<cOperator> opraratorStatus;
+    bool magicStatus = false;
+    bool carpentryStatus = false;
     bool statusOk = false;
     forever {
         m_Mutex.lock();
@@ -265,7 +502,6 @@ void cSerialPortSender::main_loop()
             emit finished();
             return;
         }
-        boardData = m_DataToBoard;
         m_Mutex.unlock();
         m_IsSerialPortFound = searchSerialPort(&portInfo);
         if (m_IsSerialPortFound) {
@@ -285,14 +521,46 @@ void cSerialPortSender::main_loop()
 
         if (m_IsSerialPortConnected && m_IsSerialPortFound) {
             switch (m_Method) {
+            case DONOTHING:
+                QThread::msleep(200);
+                break;
             case SENDDATA:
-                    sendDataToBoard(boardData);
+                    sendDataToBoard(m_DataToBoard);
                     m_Method = GETSTATUS;
                     break;
             case GETSTATUS:
                 opraratorStatus = getOperatorStatus(&statusOk);
                 if (statusOk && opraratorStatus.count() > 0) {
+                    if (opraratorStatus.first().getNumOP() == opraratorStatus.count())
+                        m_Method = DONOTHING;
                     emit sigOperatorStatus(opraratorStatus);
+
+                }
+                break;
+            case SENDMAGICDATA:
+                sendMagicDataToBoard(m_MagicData);
+                m_Method = GETMAGICSTATUS;
+                break;
+            case GETMAGICSTATUS:
+                magicStatus = getMagicStatus(&statusOk);
+                if (statusOk && magicStatus)
+                {
+                    m_Method = DONOTHING;
+                    emit sigMagicStatus(magicStatus);
+
+                }
+                break;
+            case SENDCARPENTRYDATA:
+                sendCarpentryDataToBoard(m_CarpentryData);
+                m_Method = GETCARPENTRYSTATUS;
+                break;
+            case GETCARPENTRYSTATUS:
+                carpentryStatus = getCarpentryStatus(&statusOk);
+                if (statusOk && carpentryStatus)
+                {
+                    m_Method = DONOTHING;
+                    emit sigCarpentryStatus(carpentryStatus);
+
                 }
                 break;
             }

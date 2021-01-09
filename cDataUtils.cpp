@@ -1,9 +1,11 @@
 #include "cDataUtils.h"
 #include <QDateTime>
-#include <QDebug>
 
 #define STATUSCODE_INDEX_HIGH           0x03
 #define STATUSCODE_INDEX_LOW            0x04
+
+#define MAGICCODE_INDEX_HIGH           0x03
+#define MAGICCODE_INDEX_LOW            0x04
 
 cDataUtils::cDataUtils(QObject *parent) : QObject(parent)
 {
@@ -75,11 +77,57 @@ QByteArray cDataUtils::commandSendDataToBoard(QByteArray data)
 
 }
 
+QByteArray cDataUtils::commandSendMagicDataToBoard(QByteArray data)
+{
+    QByteArray retVal;
+    quint16 length = data.length();
+    retVal.append(static_cast<char>(0x03));
+    retVal.append(static_cast<char>(length >> 8));
+    retVal.append(static_cast<char>(length));
+    retVal.append(data);
+    retVal.append(static_cast<char>(checkSum(retVal)));
+    return retVal;
+}
+
+QByteArray cDataUtils::commandSendCarpentryDataToBoard(QByteArray data)
+{
+    QByteArray retVal;
+    quint16 length = data.length();
+    retVal.append(static_cast<char>(0x05));
+    retVal.append(static_cast<char>(length >> 8));
+    retVal.append(static_cast<char>(length));
+    retVal.append(data);
+    retVal.append(static_cast<char>(checkSum(retVal)));
+    return retVal;
+}
+
 QByteArray cDataUtils::commandGetOperatorStatus()
 {
     QByteArray retVal;
     quint16 length = 0x00;
-    retVal.append(static_cast<char>(0x02));
+    retVal.append(static_cast<char>(CMDSTATUS::CMD));
+    retVal.append(static_cast<char>(length >> 8));
+    retVal.append(static_cast<char>(length));
+    retVal.append(static_cast<char>(checkSum(retVal)));
+    return retVal;
+}
+
+QByteArray cDataUtils::commandGetCarpentryStatus()
+{
+    QByteArray retVal;
+    quint16 length = 0x00;
+    retVal.append(static_cast<char>(CMDSTATUS::CARPENTRY));
+    retVal.append(static_cast<char>(length >> 8));
+    retVal.append(static_cast<char>(length));
+    retVal.append(static_cast<char>(checkSum(retVal)));
+    return retVal;
+}
+
+QByteArray cDataUtils::commandGetMagicStatus()
+{
+    QByteArray retVal;
+    quint16 length = 0x00;
+    retVal.append(static_cast<char>(CMDSTATUS::MAGIC));
     retVal.append(static_cast<char>(length >> 8));
     retVal.append(static_cast<char>(length));
     retVal.append(static_cast<char>(checkSum(retVal)));
@@ -101,5 +149,25 @@ QList<cOperator> cDataUtils::parseResponseFromBoard(QByteArray data)
             retVal.append(tmpVal);
         }
     }
+    return retVal;
+}
+
+bool cDataUtils::parseMagicDataFromBoard(QByteArray data)
+{
+    bool retVal = false;
+    quint16 magicCode = data.at(MAGICCODE_INDEX_HIGH);
+    magicCode = magicCode << 8 | data.at(MAGICCODE_INDEX_LOW);
+    if (magicCode > 0)
+        retVal = true;
+    return retVal;
+}
+
+bool cDataUtils::parseCarpentryDataFromBoard(QByteArray data)
+{
+    bool retVal = false;
+    quint16 magicCode = data.at(MAGICCODE_INDEX_HIGH);
+    magicCode = magicCode << 8 | data.at(MAGICCODE_INDEX_LOW);
+    if (magicCode > 0)
+        retVal = true;
     return retVal;
 }
