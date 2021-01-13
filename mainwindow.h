@@ -65,6 +65,8 @@ private:
     QString m_MaAB1;
     QString m_MaAB2;
     QString m_MCUAction;
+    QString m_Magic;
+    QString m_Dongmoc;
     QStringList m_TitlebarText;
     QStringList m_ContinueMH;
     QStringList m_TenContinueousKanban;
@@ -79,6 +81,9 @@ private slots:
     void onCheckingKanbanOKClicked();
     void onCheckingKanbanNGClicked();
     void onCheckingKanbanSettingClicked();
+
+    void onCheckingKanbanFinishOperator();
+    void onCheckingKanbanFinishMagic();
 
     void onScannerReady(const QString &data);
     void on_TableNameSelected(QString tableName);
@@ -99,6 +104,8 @@ private slots:
     void onSerialPortConnected();
     void onSerialPortDisconnected();
     void onOperatorStatus(const QList<cOperator> &status);
+    void onMagicStatus(bool status);
+    void onCarpentryStatus(bool status);
 };
 
 #endif // MAINWINDOW_H

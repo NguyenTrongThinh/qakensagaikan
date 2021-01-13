@@ -89,6 +89,40 @@ void wCheckingKanban::createMCUActionBox(int numBox)
 
 }
 
+void wCheckingKanban::createMagicStatus()
+{
+    QLayoutItem *child;
+    qDebug() << "wCheckingKanban::createMagicStatus-Start Delete child count" << ui->gridLayout_6->count();
+    while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
+        qDebug() << "wCheckingKanban::createMagicStatus-Delete child";
+        delete child->widget();
+        delete child;
+    }
+    QLabel *Label = new QLabel();
+    Label->setStyleSheet("font-size: 15pt;");
+    Label->setAlignment(Qt::AlignCenter);
+    Label->setStyleSheet("QLabel{ width:70px; height: 40px; border-color: rgb(46, 52, 54);border: 1px solid black;}");
+    Label->setText("MAGIC");
+    ui->gridLayout_6->addWidget(Label);
+}
+
+void wCheckingKanban::createDongMocStatus()
+{
+    QLayoutItem *child;
+    qDebug() << "wCheckingKanban::createDongMocStatus-Start Delete child count" << ui->gridLayout_6->count();
+    while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
+        qDebug() << "wCheckingKanban::createDongMocStatus-Delete child";
+        delete child->widget();
+        delete child;
+    }
+    QLabel *Label = new QLabel();
+    Label->setStyleSheet("font-size: 15pt;");
+    Label->setAlignment(Qt::AlignCenter);
+    Label->setStyleSheet("QLabel{ width:100px; height: 40px; border-color: rgb(46, 52, 54);border: 1px solid black;}");
+    Label->setText("DONG MOC");
+    ui->gridLayout_6->addWidget(Label);
+}
+
 void wCheckingKanban::setOperatorStatus(int numOfOperator, bool isMCUConnect)
 {
     if((ui->gridLayout_6->count() >= (numOfOperator + 1)) && (ui->gridLayout_6->count() > 0))
@@ -98,6 +132,28 @@ void wCheckingKanban::setOperatorStatus(int numOfOperator, bool isMCUConnect)
     }
     if(ui->gridLayout_6->count() == (numOfOperator + 1))
     {
+        isFinishOperator = true;
+        emit sigOperatorFinish();
+
+    }
+}
+
+void wCheckingKanban::setMagicStatus(bool status)
+{
+    if(status == true)
+    {
+        QLabel *myLabel = qobject_cast<QLabel*>(ui->gridLayout_6->itemAt(0)->widget());
+        myLabel->setStyleSheet("QLabel{ width:70px; height: 40px; border-color: rgb(46, 52, 54);background-color: rgb(138, 226, 52);border: 1px solid black;}");
+        emit sigMagicFinish();
+    }
+}
+
+void wCheckingKanban::setDongMocStatus(bool status)
+{
+    if(status == true)
+    {
+        QLabel *myLabel = qobject_cast<QLabel*>(ui->gridLayout_6->itemAt(0)->widget());
+        myLabel->setStyleSheet("QLabel{ width:100px; height: 40px; border-color: rgb(46, 52, 54);background-color: rgb(138, 226, 52);border: 1px solid black;}");
         if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
             if ((m_Timer != nullptr) && (m_Timer->isActive() == false))
             {

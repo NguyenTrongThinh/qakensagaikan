@@ -5,7 +5,7 @@ cDataSessionActivating::cDataSessionActivating()
 }
 
 cDataSessionActivating::cDataSessionActivating(const cDataSessionActivating &other)
-    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_Makanban(other.m_Makanban), m_maab1(other.m_maab1), m_maab2(other.m_maab2) , m_thaotacmcu(other.m_thaotacmcu), m_Pictures(other.m_Pictures)
+    : m_Mnv(other.m_Mnv), m_Tenbangloi(other.m_Tenbangloi), m_Makanban(other.m_Makanban), m_maab1(other.m_maab1), m_maab2(other.m_maab2) , m_thaotacmcu(other.m_thaotacmcu), m_magic(other.m_magic), m_dongmoc(other.m_dongmoc), m_Pictures(other.m_Pictures)
 {
 
 }
@@ -50,6 +50,16 @@ void cDataSessionActivating::setMCUAction(QString mcuaction)
     m_thaotacmcu = mcuaction;
 }
 
+void cDataSessionActivating::setMagic(QString magic)
+{
+    m_magic = magic;
+}
+
+void cDataSessionActivating::setDongMoc(QString dongmoc)
+{
+    m_dongmoc = dongmoc;
+}
+
 QString cDataSessionActivating::getMNV() const
 {
     return m_Mnv;
@@ -83,4 +93,14 @@ QString cDataSessionActivating::getMaAB2() const
 QString cDataSessionActivating::getMCUAction() const
 {
     return m_thaotacmcu;
+}
+
+QString cDataSessionActivating::getMagic() const
+{
+    return m_magic;
+}
+
+QString cDataSessionActivating::getDongMoc() const
+{
+    return m_dongmoc;
 }

@@ -53,6 +53,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_CheckingKanban, SIGNAL(sigOKCkicked()), this, SLOT(onCheckingKanbanOKClicked()));
     connect(m_CheckingKanban, SIGNAL(sigNGClicked()), this, SLOT(onCheckingKanbanNGClicked()));
     connect(m_CheckingKanban, SIGNAL(sigSettingClicked()), this, SLOT(onCheckingKanbanSettingClicked()));
+
+    connect(m_CheckingKanban, SIGNAL(sigOperatorFinish()), this, SLOT(onCheckingKanbanFinishOperator()));
+    connect(m_CheckingKanban, SIGNAL(sigMagicFinish()), this, SLOT(onCheckingKanbanFinishMagic()));
+
     m_ErrorTable = new wErrorTable();
 
     m_CameraStream = new wCameraStream();
@@ -102,6 +106,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(serialportSender, SIGNAL(sigSerialPortDisconnected()), this, SLOT(onSerialPortDisconnected())) ;
 
     QObject::connect(serialportSender, SIGNAL(sigOperatorStatus(const QList<cOperator> &)), this, SLOT(onOperatorStatus(const QList<cOperator> &))) ;
+    QObject::connect(serialportSender, SIGNAL(sigMagicStatus(bool)), this, SLOT(onMagicStatus(bool)));
+    QObject::connect(serialportSender, SIGNAL(sigCarpentryStatus(bool)), this, SLOT(onCarpentryStatus(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -136,6 +142,8 @@ void MainWindow::setStackViewPage(int page)
             m_CurrentSessionData.setMaAB1(m_MaAB1.toUpper());
             m_CurrentSessionData.setMaAB2(m_MaAB2.toUpper());
             m_CurrentSessionData.setMCUAction(m_MCUAction);
+            m_CurrentSessionData.setMagic(m_Magic);
+            m_CurrentSessionData.setDongMoc(m_Dongmoc);
             m_Database->insertTempSession(m_CurrentSessionData);
             if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
                 m_CheckingKanban->onBtnOKClicked();
@@ -273,6 +281,36 @@ void MainWindow::onCheckingKanbanSettingClicked()
     delete m_passwordDialog;
 }
 
+void MainWindow::onCheckingKanbanFinishOperator()
+{
+    qDebug() << "MainWindow::onCheckingKanbanFinishOperator-Send Magic: " << m_Magic;
+    if(m_Magic != "")
+    {
+        m_CheckingKanban->createMagicStatus();
+        serialportSender->requestMethod(cSerialPortSender::SENDMAGICDATA);
+    }
+    else
+    {
+        m_CheckingKanban->createMagicStatus();
+        m_CheckingKanban->setMagicStatus(true);
+    }
+}
+
+void MainWindow::onCheckingKanbanFinishMagic()
+{
+    qDebug() << "MainWindow::onCheckingKanbanFinishOperator-Send Dongmoc: " << m_Dongmoc;
+    if(m_Dongmoc != "")
+    {
+        m_CheckingKanban->createDongMocStatus();
+        serialportSender->requestMethod(cSerialPortSender::SENDCARPENTRYDATA);
+    }
+    else
+    {
+        m_CheckingKanban->createDongMocStatus();
+        m_CheckingKanban->setDongMocStatus(true);
+    }
+}
+
 void MainWindow::onScannerReady(const QString &data)
 {
     qDebug() << "MainWindow::onScannerReady-Data: " << data;
@@ -309,7 +347,13 @@ void MainWindow::onScannerReady(const QString &data)
                         QStringList myMCU = MCUAction.split("OP");
                         myMCU.removeFirst();
                         m_MCUAction = "";
+                        m_Magic = "";
+                        m_Dongmoc = "";
                         m_MCUAction = MCUAction;
+                        m_Magic = myDataMH[i].getChamMagic();
+                        m_Dongmoc = myDataMH[i].getDongMoc();
+                        serialportSender->setMagicData(m_Magic.toLatin1());
+                        serialportSender->setCarpentryData(m_Dongmoc.toLatin1());
                         int numOfBox = myMCU.count();
                         m_MaAB1 = "";
                         m_MaAB2 = "";
@@ -503,6 +547,8 @@ void MainWindow::onScannerReady(const QString &data)
             m_Kanbancode = m_CurrentSessionData.getMaKanban();
             m_MaAB1 = m_CurrentSessionData.getMaAB1();
             m_MaAB2 = m_CurrentSessionData.getMaAB2();
+            m_Magic = m_CurrentSessionData.getMagic();
+            m_Dongmoc = m_CurrentSessionData.getDongMoc();
             QString myMCUAction = m_CurrentSessionData.getMCUAction();
             m_ErrorTable->setMH(m_Kanbancode.toUpper());
             m_CheckingKanban->setMKB(m_Kanbancode.toUpper());
@@ -590,6 +636,9 @@ void MainWindow::onErrorSessionFinished()
     m_ErrorTable->setAB1("");
     m_ErrorTable->setAB2("");
     m_Kanbancode = "";
+    m_CheckingKanban->setMAB1("");
+    m_CheckingKanban->setMAB2("");
+    m_CheckingKanban->setMKB("");
     setStackViewPage(SCAN_KANBAN_PAGE);
 }
 
@@ -685,5 +734,24 @@ void MainWindow::onOperatorStatus(const QList<cOperator> &status)
                 m_CheckingKanban->setOperatorStatus(op.getOperator(), m_isMCUConnected);
             }
         }
+    }
+}
+
+void MainWindow::onMagicStatus(bool status)
+{
+    qDebug() << "=======================MainWindow::onMagicStatus-Status: " << status;
+    if(m_StackWidget->currentIndex() == CHECKING_KANBAN_PAGE)
+    {
+        m_CheckingKanban->setMagicStatus(status);
+    }
+
+}
+
+void MainWindow::onCarpentryStatus(bool status)
+{
+    qDebug() << "MainWindow::onCarpentryStatus-Status: " << status;
+    if(m_StackWidget->currentIndex() == CHECKING_KANBAN_PAGE)
+    {
+        m_CheckingKanban->setDongMocStatus(status);
     }
 }
