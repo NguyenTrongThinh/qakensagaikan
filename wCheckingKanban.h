@@ -23,15 +23,22 @@ public:
     void setDelayTiming(int sec);
     void cancelOperation();
     void createMCUActionBox(int numBox);
+    void createMagicStatus();
+    void createDongMocStatus();
     void setOperatorStatus(int numOfOperator, bool isMCUConnect);
+    void setMagicStatus(bool status);
+    void setDongMocStatus(bool status);
 private:
     Ui::wCheckingKanban *ui;
     QTimer *m_Timer = nullptr;
     int m_Delay = 0;
+    bool isFinishOperator = false;
 signals:
     void sigOKCkicked();
     void sigNGClicked();
     void sigSettingClicked();
+    void sigOperatorFinish();
+    void sigMagicFinish();
 
 private slots:
     void onTimerTimeout();
