@@ -70,6 +70,7 @@ void wErrorTable::setAB1(QString ab1)
     else
     {
         m_AB1 = "";
+        ui->lbAB1->setText("");
     }
 
 }
@@ -84,6 +85,7 @@ void wErrorTable::setAB2(QString ab2)
     else
     {
         m_AB2 = "";
+        ui->lbAB2->setText("");
     }
 }
 

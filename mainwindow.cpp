@@ -610,6 +610,8 @@ void MainWindow::on_CancelButtonClicked()
         m_SCanKanbanCode->setKanbanLable("SCAN");
         m_SCanKanbanCode->setMaAB1("");
         m_SCanKanbanCode->setMaAB2("");
+        m_ErrorTable->setAB1("");
+        m_ErrorTable->setAB2("");
         m_ErrorTable->clearCheckedItems();
         setStackViewPage(SCAN_STAFF_PAGE);
     }
