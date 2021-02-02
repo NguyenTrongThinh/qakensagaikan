@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 #ifndef BUILD_PC
-//    qInstallMessageHandler(myMessageHandler);
+    qInstallMessageHandler(myMessageHandler);
 #endif
    // QPixmap pixmap(":/splash/resources/splash.png");
 //    QSplashScreen splash(pixmap);
