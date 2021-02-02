@@ -39,6 +39,7 @@ signals:
     void sigSettingClicked();
     void sigOperatorFinish();
     void sigMagicFinish();
+    void sigDongmocFinish();
 
 private slots:
     void onTimerTimeout();

@@ -134,7 +134,13 @@ void wCheckingKanban::setOperatorStatus(int numOfOperator, bool isMCUConnect)
     {
         isFinishOperator = true;
         emit sigOperatorFinish();
-
+        if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
+            if ((m_Timer != nullptr) && (m_Timer->isActive() == false))
+            {
+                m_Delay = cConfigureUtils::getDelayValue();
+                m_Timer->start();
+            }
+        }
     }
 }
 
@@ -154,13 +160,7 @@ void wCheckingKanban::setDongMocStatus(bool status)
     {
         QLabel *myLabel = qobject_cast<QLabel*>(ui->gridLayout_6->itemAt(0)->widget());
         myLabel->setStyleSheet("QLabel{ width:100px; height: 40px; border-color: rgb(46, 52, 54);background-color: rgb(138, 226, 52);border: 1px solid black;}");
-        if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
-            if ((m_Timer != nullptr) && (m_Timer->isActive() == false))
-            {
-                m_Delay = cConfigureUtils::getDelayValue();
-                m_Timer->start();
-            }
-        }
+        emit sigDongmocFinish();
     }
 }
 

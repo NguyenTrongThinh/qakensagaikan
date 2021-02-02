@@ -84,6 +84,7 @@ private slots:
 
     void onCheckingKanbanFinishOperator();
     void onCheckingKanbanFinishMagic();
+    void onDongmocFinish();
 
     void onScannerReady(const QString &data);
     void on_TableNameSelected(QString tableName);
