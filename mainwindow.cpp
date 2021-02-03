@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(m_CheckingKanban, SIGNAL(sigOperatorFinish()), this, SLOT(onCheckingKanbanFinishOperator()));
     connect(m_CheckingKanban, SIGNAL(sigMagicFinish()), this, SLOT(onCheckingKanbanFinishMagic()));
+    connect(m_CheckingKanban, SIGNAL(sigDongmocFinish()), this, SLOT(onDongmocFinish()));
 
     m_ErrorTable = new wErrorTable();
 
@@ -232,8 +233,13 @@ void MainWindow::onCheckingKanbanOKClicked()
     dataSession.setloi(loi);
     bool retVal = m_Database->insertHistoryTransaction(dataSession, cSQliteDatabase::UNSUBMITED);
     if (retVal)
+    {
         m_Database->deleteTempSession();
-    onErrorSessionFinished();
+    }
+    if((m_Magic == "") && (m_Dongmoc == ""))
+    {
+        onErrorSessionFinished();
+    }
 }
 
 void MainWindow::onCheckingKanbanNGClicked()
@@ -309,6 +315,11 @@ void MainWindow::onCheckingKanbanFinishMagic()
         m_CheckingKanban->createDongMocStatus();
         m_CheckingKanban->setDongMocStatus(true);
     }
+}
+
+void MainWindow::onDongmocFinish()
+{
+    onErrorSessionFinished();
 }
 
 void MainWindow::onScannerReady(const QString &data)
@@ -641,7 +652,9 @@ void MainWindow::onErrorSessionFinished()
     m_CheckingKanban->setMAB1("");
     m_CheckingKanban->setMAB2("");
     m_CheckingKanban->setMKB("");
+
     setStackViewPage(SCAN_KANBAN_PAGE);
+
 }
 
 void MainWindow::onDatabseSyncing()
