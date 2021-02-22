@@ -138,8 +138,12 @@ void wCheckingKanban::setOperatorStatus(int numOfOperator, bool isMCUConnect)
             if ((m_Timer != nullptr) && (m_Timer->isActive() == false))
             {
                 m_Delay = cConfigureUtils::getDelayValue();
+                qDebug() << "wCheckingKanban::setOperatorStatus Original m_Delay" << m_Delay;
+                ui->btnNotGood->setEnabled(true);
                 m_Timer->start();
             }
+        } else {
+            ui->btnNotGood->setEnabled(true);
         }
     }
 }
@@ -168,8 +172,8 @@ void wCheckingKanban::onTimerTimeout()
 {
     if (m_Delay > 0) {
         m_Delay--;
+        qDebug() << "wCheckingKanban::onTimerTimeout m_Delay" << m_Delay;
        // ui->btnOK->setText(QString::number(m_Delay).toUpper());
-
     } else {
         m_Timer->stop();
         //ui->btnOK->setText("OK");
@@ -179,6 +183,7 @@ void wCheckingKanban::onTimerTimeout()
             delete child->widget();
             delete child;
         }
+        ui->btnNotGood->setEnabled(false);
         emit sigOKCkicked();
     }
 }
@@ -186,11 +191,7 @@ void wCheckingKanban::onTimerTimeout()
 void wCheckingKanban::onBtnOKClicked()
 {
     if (QString::compare(cConfigureUtils::getManualMode(), "1") != 0) {
-//        if (m_Timer != nullptr)
-//        {
-//            m_Delay = cConfigureUtils::getDelayValue();
-//            m_Timer->start();
-//        }
+        qDebug() << "wCheckingKanban::onBtnOKClicked In Auto mode";
     } else {
         QLayoutItem *child;
         while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
