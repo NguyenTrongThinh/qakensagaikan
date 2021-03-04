@@ -705,7 +705,7 @@ bool cSQliteDatabase::insertPicturesTransaction(cPicturesData picture, int submi
     }
     QSqlQuery query = QSqlQuery(m_Database);
     QString location = picture.getLocationOnDisk();
-    QString saveDate = picture.getSaveDate().toString("yyyy-MM-dd hh:mm:ss");
+    QString saveDate = picture.getSaveDate().toString("yyyy-MM-dd HH:mm:ss");
 
     QString cmd = QString("INSERT INTO \"%1\" (location, date, submit) VALUES (\"%2\", \"%3\", \"%4\")")
             .arg(pictures)
@@ -734,7 +734,7 @@ bool cSQliteDatabase::updateSubmitedPicturesTransaction(cPicturesData picture, i
     }
     QSqlQuery query = QSqlQuery(m_Database);
 
-    QString cmd = QString("UPDATE \"%1\" SET submit = %2 WHERE date = \"%3\"").arg(pictures).arg(submited).arg(picture.getSaveDate().toString("yyyy-MM-dd hh:mm:ss"));
+    QString cmd = QString("UPDATE \"%1\" SET submit = %2 WHERE date = \"%3\"").arg(pictures).arg(submited).arg(picture.getSaveDate().toString("yyyy-MM-dd HH:mm:ss"));
     query.prepare(cmd);
     query.exec();
     retVal = m_Database.transaction();
@@ -766,7 +766,7 @@ bool cSQliteDatabase::deleteOldSubmitedPicturesTransaction()
     query.exec();
     while(query.next()) {
         QString sDateTime = query.value(2).toString();
-        QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd hh:mm:ss");
+        QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd HH:mm:ss");
         //qDebug() << "Date To " << rowDatabaseTime.daysTo(currentDateTime);
         if (rowDatabaseTime.daysTo(currentDateTime) >= 30) {
             deleteDateTime.append(sDateTime);
@@ -808,7 +808,7 @@ QList<cPicturesData> cSQliteDatabase::getUnsubmitedPicturesTransaction()
     query.exec();
     while(query.next()) {
         datasession.setLocationOnDisk(query.value(1).toString());
-        datasession.setSaveDate(QDateTime::fromString(query.value(2).toString(), "yyyy-MM-dd hh:mm:ss"));
+        datasession.setSaveDate(QDateTime::fromString(query.value(2).toString(), "yyyy-MM-dd HH:mm:ss"));
         retVal.append(datasession);
         loi.clear();
     }
@@ -836,12 +836,12 @@ QList<cPicturesData> cSQliteDatabase::getOldSubmitedPicturesTransaction()
     query.exec();
     while(query.next()) {
         QString sDateTime = query.value(2).toString();
-        QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd hh:mm:ss");
+        QDateTime rowDatabaseTime = QDateTime::fromString(sDateTime, "yyyy-MM-dd HH:mm:ss");
         qDebug() << "cSQliteDatabase::getOldSubmitedPicturesTransaction-Date To " << rowDatabaseTime.daysTo(currentDateTime);
         if (rowDatabaseTime.daysTo(currentDateTime) >= 180) {
             cPicturesData onePictireData;
             onePictireData.setLocationOnDisk(query.value(1).toString());
-            onePictireData.setSaveDate(QDateTime::fromString(query.value(2).toString(), "yyyy-MM-dd hh:mm:ss"));
+            onePictireData.setSaveDate(QDateTime::fromString(query.value(2).toString(), "yyyy-MM-dd HH:mm:ss"));
             retVal.append(onePictireData);
         }
     }

@@ -168,7 +168,7 @@ void wErrorTable::onButtonClicked(QString label)
         cDataSessionActivating tempDataSession = m_DataBase->getTempSession();
         dataSession.setHinh(tempDataSession.getPicturesList());
         dataSession.setmnv(cStaffIDParserUtils::getMNV(m_MNV));
-        dataSession.settime(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        dataSession.settime(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
         dataSession.setMHCode(cKanbanParserUtils::getMH(m_MH));
         dataSession.setMHDatePrint(cKanbanParserUtils::getDatePrint(m_MH));
         dataSession.setMHNamePlate(cKanbanParserUtils::getMHNamePlate(m_MH));

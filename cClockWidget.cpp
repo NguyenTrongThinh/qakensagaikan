@@ -55,7 +55,7 @@ void cClockWidget::onTimerTicked()
         m_Date->setText(current.toString("dd-MM-yy"));
     }
     if (m_Time != nullptr) {
-        m_Time->setText(current.toString("hh:mm"));
+        m_Time->setText(current.toString("HH:mm"));
     }
 }
 
