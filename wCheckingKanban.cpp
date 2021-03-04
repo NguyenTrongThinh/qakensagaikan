@@ -176,13 +176,7 @@ void wCheckingKanban::onTimerTimeout()
        // ui->btnOK->setText(QString::number(m_Delay).toUpper());
     } else {
         m_Timer->stop();
-        //ui->btnOK->setText("OK");
-        QLayoutItem *child;
-        qDebug() << "Start Delete child count" << ui->gridLayout_6->count();
-        while ((child = ui->gridLayout_6->takeAt(0)) != 0) {
-            delete child->widget();
-            delete child;
-        }
+        qDebug() << "wCheckingKanban::onTimerTimeout";
         ui->btnNotGood->setEnabled(false);
         emit sigOKCkicked();
     }

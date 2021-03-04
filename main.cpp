@@ -24,6 +24,20 @@
 #include "cdatamh.h"
 #include <cOperator.h>
 #include <QLockFile>
+#include <execinfo.h>
+#include <signal.h>
+#include <unistd.h>
+
+void handler(int sig)
+{
+  void *array[10];
+  size_t size;
+  size = backtrace(array, 10);
+  fprintf(stderr, "Error: signal %d:\n", sig);
+  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  exit(1);
+}
+
 
 void myMessageHandler(QtMsgType type,const QMessageLogContext &context,const QString &msg)
 {
@@ -69,6 +83,9 @@ void myMessageHandler(QtMsgType type,const QMessageLogContext &context,const QSt
 }
 int main(int argc, char *argv[])
 {
+    signal(SIGSEGV, handler);   // install our handler
+    qDebug() << "main: " << "Install SIG SEGV Handler";
+
     QApplication a(argc, argv);
 #ifndef BUILD_PC
     qInstallMessageHandler(myMessageHandler);
