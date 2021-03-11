@@ -565,7 +565,7 @@ void cSerialPortSender::main_loop()
                 break;
             }
         }
-        QThread::msleep(1000);
+        QThread::msleep(200);
     }
 }
 
