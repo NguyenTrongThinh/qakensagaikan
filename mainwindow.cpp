@@ -398,6 +398,8 @@ void MainWindow::onScannerReady(const QString &data)
                     {
                         m_ContinueMH.append(m_Kanbancode);
                     }
+                    qDebug() << "MainWindow::onScannerReady-Send data to board ";
+                    serialportSender->requestMethod(cSerialPortSender::SENDDATA);
                     QTimer::singleShot(200, this, SLOT(nextStackView()));
                 }
 
