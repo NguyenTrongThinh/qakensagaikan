@@ -159,6 +159,18 @@ void MainWindow::setOperator(quint8 Operator)
 
 }
 
+void MainWindow::sleep_ms(int time_ms)
+{
+    QEventLoop eventLoop;
+    QTimer timeoutTimer;
+    QObject::connect(&timeoutTimer, SIGNAL(timeout()), &eventLoop, SLOT(quit()));
+    timeoutTimer.setSingleShot(true);
+
+    //start timeout timer;
+    timeoutTimer.start(time_ms);
+    eventLoop.exec();
+}
+
 void MainWindow::onWifiConnected()
 {
     //use when upload data
@@ -305,6 +317,8 @@ void MainWindow::onCheckingKanbanFinishOperator()
 void MainWindow::onCheckingKanbanFinishMagic()
 {
     qDebug() << "MainWindow::onCheckingKanbanFinishOperator-Send Dongmoc: " << m_Dongmoc;
+    qDebug() << "MainWindow::onCheckingKanbanFinishOperator-Sleep 2s";
+    sleep_ms(2000);
     if(m_Dongmoc != "")
     {
         m_CheckingKanban->createDongMocStatus();

@@ -36,6 +36,7 @@ public:
 private:
     void setStackViewPage(int page);
     void setOperator(quint8 Operator);
+    void sleep_ms(int time_ms);
 private:
     Ui::MainWindow *ui;
     cScannerUtils *m_ScannerUtils;
